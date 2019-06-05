@@ -1,0 +1,16 @@
+============================================================
+Current time: 2019-06-01 04:56:57
+
+------------------------------------------------------------
+ Desired T range:    300.00 to 8000.00  K
+ Desired P range:     50.00 to 499.00  GPa
+------------------------------------------------------------
+
+The volume range used in this calculation expanded x 1.2000
+The pressure range can be dealt with: [ 35.27 to 200.21] GPa
+!!!ATTENTION!!!
+
+DESIRED PRESSURE is too high (NTV is too large)!
+QHA results might not be right!
+Please reduce the NTV accordingly, for example, try to set NTV <  150.
+
