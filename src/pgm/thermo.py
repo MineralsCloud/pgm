@@ -1,6 +1,4 @@
 from lazy_property import LazyProperty
-# from qha.thermodynamics import *
-# from qha.thermodynamics import calculate_derivatives
 from .v2p import v2p
 from .util.unit_conversion import *
 from .util.tools import find_value\
@@ -228,9 +226,11 @@ def volumetric_heat_capacity(temperature, internal_energies):
 
 
 class ThermodynamicProperties:
-    # all units are ry, bohr^3
-    # all 2-d matrix are t,v(p)
-    # energy matrix should has the same size as volume or temperature
+    """
+    all units are ry, bohr^3
+    all 2-d matrix are t,v(p)
+    energy matrix should has the same size as volume or temperature
+    """
     def __init__(self, volume, temperature, pressure, energy):
         self.__volume = volume
         self.__temperature = temperature
@@ -320,40 +320,6 @@ class ThermodynamicProperties:
     @LazyProperty
     def u_tp(self):
         return v2p(self.u_tv, self.p_tv, self.__pressure)
-
-    # @LazyProperty
-    # def cp_tv(self):
-    #     return pressure_specific_heat_capacity_tv(self.cv_tv, self.alpha_tv, self.gamma_tv, self.__temperature)
-
-    # @LazyProperty
-    # def geotherm(self):
-    #     return geotherm(self.alpha_tp, self.cp_tp, self.v_tp, self.__temperature)
-
-    # def get_adiabatic_t_p(self, target_temperature, target_pressure):
-    #     if is_monotonic_increasing(target_temperature) is False or is_monotonic_increasing(target_pressure) is False:
-    #         raise ValueError('temperature and pressure must be monotonic increasing')
-    #     t0 = target_temperature[0]
-    #     p0 = target_pressure[0]
-    #     t_max = target_temperature[-1]
-    #     pressure_gpa = ry_b3_to_gpa(self.__pressure)
-    #     all_t = []
-    #     all_p = []
-    #     geotherm_matrix = self.get_geotherm  # which is actually on tp grid
-    #     for i, pressure in enumerate(target_pressure):
-    #         geotherm_row_index = find_value(self.__temperature, t0)
-    #         geotherm_column_index = find_value(pressure_gpa, p0)
-    #         dp = target_pressure[1] - target_pressure[0]
-    #         ti = t0 + dp * geotherm_matrix[geotherm_row_index][geotherm_column_index]
-    #         if ti >= t_max:
-    #             print('%s times of iteration, break' % i)
-    #             break
-    #         else:
-    #             all_t.append(ti)
-    #             all_p.append(pressure)
-    #             t0 = ti
-    #             p0 += dp
-    #
-    #     return all_t, all_p
 
     def get_adiabatic_eos(self, temperature, pressure):
         ptv = ry_b3_to_gpa(self.p_tv)
