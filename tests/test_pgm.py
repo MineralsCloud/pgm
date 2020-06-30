@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from pgm.util.unit_conversion import gpa_to_ry_b3, ry_b3_to_gpa, ry_to_j_mol
 from pgm.calculator import pgm, spline_interpolation, qha, FreeEnergyCalculation
 from pgm.thermo import ThermodynamicProperties
+from pgm.data import save_data
 from pgm.reader.read_input import Input
 import numpy as np
 
@@ -36,8 +37,8 @@ if __name__ == "__main__":
     initP = 30
     finalP = 400
     discrete_temperatures = [0, 300, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000]
-    folder = 'data/epaw0/upto_400GPa/%sK/input.txt'
-    ratio = 1.2
+    folder = 'data/epaw0/1500GPa_T_trick/%sK/input.txt'
+    ratio = 2
     temperature = np.linspace(0, 8000, NT)
     qha_temp_list = [300, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000]
     qha_temperature = np.linspace(300, 8000, 771)
@@ -71,25 +72,40 @@ if __name__ == "__main__":
     # the following three instances are tqha, sqha, and static results.
     # thermodynamics can be computed by using the apis in pgm.thermo
     # tqha = ThermodynamicProperties(tqha_volumes[0], temperature, gpa_to_ry_b3(desired_pressure), tqha_total_free_energies)
-    interpolation = ThermodynamicProperties(volumes, temperature, gpa_to_ry_b3(desired_pressure), total_free_energies)
+    thermo = ThermodynamicProperties(volumes, temperature, gpa_to_ry_b3(desired_pressure), total_free_energies)
     # static = ThermodynamicProperties(sqha_volume, temperature, gpa_to_ry_b3(desired_pressure), static_free_energies)
 
-    ptv = ry_b3_to_gpa(interpolation.p_tv)
+    ptv = ry_b3_to_gpa(thermo.p_tv)
+    bt = ry_b3_to_gpa(thermo.bt_tp)
+    alpha = thermo.alpha_tp
+    cp = thermo.cp_tp
+    cv = thermo.cv_tp
+
+    save_data(bt, temperature, desired_pressure, 'bt_tp')
+    save_data(cv, temperature, desired_pressure, 'cv_tp')
+    save_data(cp, temperature, desired_pressure, 'cp_tp')
+    save_data(alpha, temperature, desired_pressure, 'alpha_tp')
+    save_data(total_free_energies, temperature, volumes, 'ftv')
+    save_data(ptv, temperature, volumes, 'ptv')
+    # print(volumes)
+    # plt.plot(volumes, ptv[0])
+    # plt.show()
+
     # this gives the pressure in unit of T and V
     # other example can be
     # g_tp, gibbs free energy as T and P
     # bt_tp bulk modulus as T and P
 
-    plt.plot(ptv[30], ry_to_j_mol(vib_entropies[30])/2/8.314, label = 'TPGM 300K', color = '#FF0066',lw = 5)
-    plt.errorbar(lubber_p, lubber_s, xerr = lubber_s_error, label = r'L$\ddot{u}$bber 2000', fmt='d',mec = "#666666",markersize = 15 , markeredgewidth = 1.5)
-    plt.errorbar(mao_p, mao_s, label = 'Mao 2001',lw = 1.5, fmt='o',markersize = 15 , markeredgewidth = 1.5)
-    plt.errorbar(shen_p[4:], shen_s[4:], xerr = shen_p_error[4:], yerr = shen_s_error[4:], label = 'Shen 2004', fmt='s',mec = "#888888",markersize = 15 , markeredgewidth = 1.5)
-    plt.errorbar(science_p[:9], science_s[:9], xerr = science_p_error[:9], yerr = science_s_error[:9], label = 'Lin 2005', fmt='o', mec = "#666666",markersize = 15 , markeredgewidth = 1.5 )
-    plt.errorbar(murphy_p, murphy_s, xerr = murphy_p_error, yerr = murphy_s_error, label = 'Murphy 2013', fmt='^',mec = "#666666",markersize = 15 , markeredgewidth = 1.5 )
-    plt.xlabel('Pressure(GPa)', labelpad=20)
-    plt.ylabel(r'S$_{vib}$(k$_B$)', labelpad=20)
-    plt.xlim(-1, 250)
-    plt.ylim(1.25, 3.5)
-    plt.legend()
-    plt.savefig('svib2_b.pdf', dpi = 300, bbox_inches='tight')
-    plt.close('all')
+    # plt.plot(ptv[30], ry_to_j_mol(vib_entropies[30])/2/8.314, label = 'TPGM 300K', color = '#FF0066',lw = 5)
+    # plt.errorbar(lubber_p, lubber_s, xerr = lubber_s_error, label = r'L$\ddot{u}$bber 2000', fmt='d',mec = "#666666",markersize = 15 , markeredgewidth = 1.5)
+    # plt.errorbar(mao_p, mao_s, label = 'Mao 2001',lw = 1.5, fmt='o',markersize = 15 , markeredgewidth = 1.5)
+    # plt.errorbar(shen_p[4:], shen_s[4:], xerr = shen_p_error[4:], yerr = shen_s_error[4:], label = 'Shen 2004', fmt='s',mec = "#888888",markersize = 15 , markeredgewidth = 1.5)
+    # plt.errorbar(science_p[:9], science_s[:9], xerr = science_p_error[:9], yerr = science_s_error[:9], label = 'Lin 2005', fmt='o', mec = "#666666",markersize = 15 , markeredgewidth = 1.5 )
+    # plt.errorbar(murphy_p, murphy_s, xerr = murphy_p_error, yerr = murphy_s_error, label = 'Murphy 2013', fmt='^',mec = "#666666",markersize = 15 , markeredgewidth = 1.5 )
+    # plt.xlabel('Pressure(GPa)', labelpad=20)
+    # plt.ylabel(r'S$_{vib}$(k$_B$)', labelpad=20)
+    # plt.xlim(-1, 250)
+    # plt.ylim(1.25, 3.5)
+    # plt.legend()
+    # plt.savefig('svib2_b.pdf', dpi = 300, bbox_inches='tight')
+    # plt.close('all')

@@ -86,7 +86,6 @@ def pgm(NTV, ratio, continuous_temperatures, input: Input = None):
 
 def qha(NTV, ratio, input: Input):
     """
-    A similar function as pgm
     Computes qha energy
     return:
     all_volumes: interpolated volumes at different discreate temperatures
