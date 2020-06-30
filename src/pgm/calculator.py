@@ -1,28 +1,143 @@
 """
-A module serve as sqha, read standard qha input 
+Core module for energy calculation in pgm
 """
 
-from pgm.reader.read_input import read_input, Input
+from pgm.reader.read_input import Input
 from pgm.util.fitting import polynomial_least_square_fitting
 from pgm.util.grid_interpolation import calculate_eulerian_strain, from_eulerian_strain
-from pgm.util.unit_conversion import *
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy.constants import physical_constants as pc
-from scipy.constants import electron_volt, angstrom, Avogadro
-from numba import vectorize, float64
 from typing import Callable, Optional
 from scipy.interpolate import UnivariateSpline, InterpolatedUnivariateSpline
 from scipy.integrate import cumtrapz
-import pandas as pd
-import gc
-import palettable
-# from qha.type_aliases import Matrix, Scalar, Vector
-# from pgm.data import generate_adiabatic_tp
-from pgm.thermo import ThermodynamicProperties
 
 HBAR = 100 / pc['electron volt-inverse meter relationship'][0] / pc['Rydberg constant times hc in eV'][0]
 K = pc['Boltzmann constant in eV/K'][0] / pc['Rydberg constant times hc in eV'][0]
+
+
+class FreeEnergyCalculation:
+    """
+    Calculate free energy using pgm
+    """
+
+    def __init__(self, NV, NT, initP, finalP, ratio, discrete_temperatures, folder):
+        self.NV = NV
+        self.NT = NT
+        self.ratio = ratio
+        self.folder = folder
+        self.discrete_temperatures = discrete_temperatures
+        self.continuous_temperature = np.linspace(discrete_temperatures[0], discrete_temperatures[-1], NT)
+        self.pressures = np.linspace(initP, finalP, NV)
+
+    def calculate(self):
+        calc_input = Input(self.folder, self.discrete_temperatures)
+
+        vib_energies, vib_entropies = pgm(self.NV, self.ratio, self.continuous_temperature, calc_input)
+
+        volumes, energies, static_energies = qha(self.NV, self.ratio, calc_input)
+
+        energies[0] = np.zeros(len(energies[0]))
+
+        static_free_energies, interpolated_volumes = spline_interpolation(volumes, static_energies,
+                                                                          self.discrete_temperatures,
+                                                                          self.continuous_temperature)
+        total_free_energies = vib_energies + static_free_energies
+
+        volumes = interpolated_volumes[0]
+
+        return total_free_energies, vib_entropies, volumes, self.pressures, self.continuous_temperature
+
+
+def pgm(NTV, ratio, continuous_temperatures, input: Input = None):
+    """
+    phonon gas model
+    compute free energies by intergrating entropies
+    return:
+    vib_free_energies: a continous grid of vibrational free energies
+    interpolated_entropies: a continous grid of entropies
+    """
+    all_volumes = []
+    all_entropies = []
+    input_dict = input.get_input()
+    discrete_temperatures = input.get_temperature()
+
+    for temp in input_dict.keys():
+        inter = Interpolation(input_dict[temp][1], NTV, ratio)
+        if temp == 0:
+            new_s = np.zeros(NTV)
+        else:
+            s = entropy(temp, input_dict[temp][3], input_dict[temp][4])
+            new_s = inter.fitting(s)
+
+        # s = entropy(temp, rs[3], rs[4])
+        # new_s = inter.fitting(s)
+
+        all_volumes.append(inter.out_volumes)
+        all_entropies.append(new_s)
+    all_volumes = np.array(all_volumes)
+    all_entropies = np.array(all_entropies)
+    interpolated_entropies, interpolated_volumes = spline_interpolation(all_volumes, all_entropies,
+                                                                        discrete_temperatures, continuous_temperatures,
+                                                                        # calibrate_option=calibrate_option
+                                                                        )
+    vib_free_energies = intergrate(continuous_temperatures, interpolated_entropies)
+    return vib_free_energies, interpolated_entropies
+
+
+def qha(NTV, ratio, input: Input):
+    """
+    A similar function as pgm
+    Computes qha energy
+    return:
+    all_volumes: interpolated volumes at different discreate temperatures
+    all_energies: interpolated qha energies at different discreate temperatures
+    all_static_energies: interpolated static energies at different discreate temperatures
+    """
+
+    def qha_energy(temperature, frequency, weights):
+        """
+        Compute vibrational free energies using qha formula
+        """
+
+        def vib_energy(temperature, frequency):
+            kt = K * temperature
+            mat = np.zeros(frequency.shape)
+            for i in range(frequency.shape[0]):
+                for j in range(frequency.shape[1]):
+                    for k in range(frequency.shape[2]):
+                        if frequency[i][j][k] <= 0:
+                            mat[i][j][k] = 0
+                        else:
+                            freq = frequency[i][j][k]
+                            hw = HBAR * freq
+                            mat[i][j][k] = 1 / 2 * hw + kt * np.log(1 - np.exp(-hw / kt))
+            return mat
+
+        scaled_q_weights = weights / np.sum(weights)
+        vibrational_energies = np.dot(vib_energy(temperature, frequency).sum(axis=2), scaled_q_weights)
+
+        return vibrational_energies
+
+    all_volumes = []
+    all_energies = []
+    all_static_energies = []
+    input_dict = input.get_input()
+
+    for temp in input_dict.keys():
+        vib_f = qha_energy(temp, input_dict[temp][3], input_dict[temp][
+            4])  # compute vibrational free energies using qha formula, only vibrational!
+        inter = Interpolation(input_dict[temp][1], NTV, ratio)
+        static_f = inter.fitting(input_dict[temp][2])
+        new_vib_f = inter.fitting(vib_f)
+
+        all_volumes.append(inter.out_volumes)
+        all_energies.append(new_vib_f)
+        all_static_energies.append(static_f)
+
+    all_volumes = np.array(all_volumes)
+    all_energies = np.array(all_energies)
+    all_static_energies = np.array(all_static_energies)
+    return all_volumes, all_energies, all_static_energies
 
 
 def entropy_fit(raw_volumes, raw_energies, discrete_temperatures, continuous_temperatures
@@ -214,124 +329,6 @@ class Interpolation:
     def fitting(self, quantity, order=3):
         _, fitted_quantity = polynomial_least_square_fitting(self.in_strains, quantity, self.out_strains, order)
         return fitted_quantity
-
-
-def pgm(NTV, ratio, discrete_temperatures, continuous_temperatures,
-        path='data/vibration/%sK/input.txt',  input: Input = None):
-    """
-    phonon gas model
-    compute free energies by intergrating entropies
-    return:
-    vib_free_energies: a continous grid of vibrational free energies
-    interpolated_entropies: a continous grid of entropies
-    """
-    all_volumes = []
-    all_entropies = []
-    for temp in discrete_temperatures:
-        rs = read_input(path % temp)
-        inter = Interpolation(rs[1], NTV, ratio)
-        if temp == 0:
-            new_s = np.zeros(NTV)
-            # s = entropy(0.01, rs[3], rs[4])
-            # new_s = inter.fitting(s)
-            # print(s)
-        else:
-            s = entropy(temp, rs[3], rs[4])
-            new_s = inter.fitting(s)
-
-        # s = entropy(temp, rs[3], rs[4])
-        # new_s = inter.fitting(s)
-
-        all_volumes.append(inter.out_volumes)
-        all_entropies.append(new_s)
-    all_volumes = np.array(all_volumes)
-    all_entropies = np.array(all_entropies)
-    interpolated_entropies, interpolated_volumes = spline_interpolation(all_volumes, all_entropies,
-                                                                        discrete_temperatures, continuous_temperatures,
-                                                                        # calibrate_option=calibrate_option
-                                                                        )
-    vib_free_energies = intergrate(continuous_temperatures, interpolated_entropies)
-    return vib_free_energies, interpolated_entropies
-
-
-def zero_free_energies(NTV, ratio, discrete_temperatures, continuous_temperatures, path='data/vibration/%sK/input.txt'):
-    all_volumes = []
-    all_energies = []
-    for temp in discrete_temperatures:
-        rs = read_input(path % temp)
-        f = zero_point_motion(temp, rs[3], rs[4])
-        inter = Interpolation(rs[1], NTV, ratio)
-        new_f = inter.fitting(f)
-        all_volumes.append(inter.out_volumes)
-        all_energies.append(new_f)
-    all_volumes = np.array(all_volumes)
-    all_energies = np.array(all_energies)
-    interpolated_energies, interpolated_volumes = spline_interpolation(all_volumes, all_energies, discrete_temperatures,
-                                                                       continuous_temperatures)
-    return interpolated_energies
-
-
-def qha_energy(temperature, frequency, weights):
-    """
-    Compute vibrational free energies using qha formula
-    """
-
-    def vib_energy(temperature, frequency):
-        kt = K * temperature
-        mat = np.zeros(frequency.shape)
-        for i in range(frequency.shape[0]):
-            for j in range(frequency.shape[1]):
-                for k in range(frequency.shape[2]):
-                    if frequency[i][j][k] <= 0:
-                        mat[i][j][k] = 0
-                    else:
-                        freq = frequency[i][j][k]
-                        hw = HBAR * freq
-                        mat[i][j][k] = 1 / 2 * hw + kt * np.log(1 - np.exp(-hw / kt))
-        return mat
-
-    scaled_q_weights = weights / np.sum(weights)
-    vibrational_energies = np.dot(vib_energy(temperature, frequency).sum(axis=2), scaled_q_weights)
-
-    return vibrational_energies
-
-
-def qha(NTV, ratio, discrete_temperatures, folder='data/vibration/%sK/input.txt'):
-    """
-    Computes qha energy
-    return:
-    all_volumes: interpolated volumes at different discreate temperatures
-    all_energies: interpolated qha energies at different discreate temperatures
-    all_static_energies: interpolated static energies at different discreate temperatures
-    """
-    all_volumes = []
-    all_energies = []
-    all_static_energies = []
-    for temp in discrete_temperatures:
-        rs = read_input(folder % temp)
-        vib_f = qha_energy(temp, rs[3], rs[4])  # compute vibrational free energies using qha formula, only vibrational!
-        inter = Interpolation(rs[1], NTV, ratio)
-        static_f = inter.fitting(rs[2])
-        new_vib_f = inter.fitting(vib_f)
-
-        all_volumes.append(inter.out_volumes)
-        all_energies.append(new_vib_f)
-        all_static_energies.append(static_f)
-
-    all_volumes = np.array(all_volumes)
-    all_energies = np.array(all_energies)
-    all_static_energies = np.array(all_static_energies)
-    return all_volumes, all_energies, all_static_energies
-
-
-def sqha_pure_vib(temperature, pressure, discrete_temperatures, folder='data/upto_600GPa/%sK/input.txt', extra=False,
-                  init_p=55, init_t=1717, ratio=1.2):
-    vib_energies, _ = pgm(len(pressure), ratio, discrete_temperatures, temperature, folder)
-    volumes, energies, static_energies = qha(len(pressure), ratio, discrete_temperatures, folder)
-    static_free_energies, _ = spline_interpolation(volumes, static_energies, discrete_temperatures, temperature)
-    total_free_energies = vib_energies.T  # +static_free_energies
-    interpolation = ThermodynamicProperties(volumes[0], temperature, gpa_to_ry_b3(pressure), total_free_energies.T)
-    return interpolation
 
 
 if __name__ == '__main__':

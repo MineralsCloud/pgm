@@ -19,16 +19,20 @@ class Input:
     """
     def __init__(self, path_to_dir, discrete_temperature):
         #TODO:add path checker
-        self.input_path = [path_to_dir % str(x) + 'K' for x in discrete_temperature]
+        self.input_path = [path_to_dir % str(x) for x in discrete_temperature]
+        self.__temperatures = discrete_temperature
         rs = {}
         for temp in discrete_temperature:
-            path = path_to_dir % str(temp) + 'K'
+            path = path_to_dir % str(temp)
             rs[temp] = read_input(path)
 
         self.__rs = rs
 
     def get_input(self):
         return self.__rs
+
+    def get_temperature(self):
+        return self.__temperatures
 
 
 def read_input(inp: Union[str, pathlib.PurePath]):
