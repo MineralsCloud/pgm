@@ -6,7 +6,7 @@ def find_value(value, target_list):
     find index of the value in a target list
     """
     target_list = np.array(target_list)
-    return np.argmin(target_list - value)
+    return np.argmin(np.abs(target_list - value))
 
 def vectorized_find_nearest(array, values, result):
     """
