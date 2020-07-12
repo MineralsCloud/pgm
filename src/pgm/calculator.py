@@ -10,6 +10,7 @@ from scipy.constants import physical_constants as pc
 from typing import Callable, Optional
 from scipy.interpolate import UnivariateSpline, InterpolatedUnivariateSpline
 from scipy.integrate import cumtrapz
+from scipy.optimize import curve_fit
 
 HBAR = 100 / pc['electron volt-inverse meter relationship'][0] / pc['Rydberg constant times hc in eV'][0]
 K = pc['Boltzmann constant in eV/K'][0] / pc['Rydberg constant times hc in eV'][0]
@@ -42,6 +43,11 @@ class FreeEnergyCalculation:
                                                                           self.discrete_temperatures,
                                                                           self.continuous_temperature)
         total_free_energies = vib_energies + static_free_energies
+
+        # if the first temperature isn't 0, the free energy needs to minus a base energy
+        if 0 not in self.discrete_temperatures:
+            s0T = np.min(self.discrete_temperatures) * np.array(vib_entropies[0, :])
+            total_free_energies -= np.array([list(s0T)] * self.NT)
 
         volumes = interpolated_volumes[0]
 
@@ -76,11 +82,17 @@ def pgm(NTV, ratio, continuous_temperatures, input: Input = None):
         all_entropies.append(new_s)
     all_volumes = np.array(all_volumes)
     all_entropies = np.array(all_entropies)
-    interpolated_entropies, interpolated_volumes = spline_interpolation(all_volumes, all_entropies,
-                                                                        discrete_temperatures, continuous_temperatures,
-                                                                        # calibrate_option=calibrate_option
-                                                                        )
+    """
+    Start from here there are 2 options:
+    If the input comes with configuration starts from 0K, we can use spline interpolation
+    Otherwise, if the starting temperature is somewhat higher than 0K, we need to fit the entropy
+    """
+    interpolated_entropies, interpolated_volumes = fit_entropy(all_volumes, all_entropies,
+                                                               discrete_temperatures, continuous_temperatures,
+                                                               )
+
     vib_free_energies = intergrate(continuous_temperatures, interpolated_entropies)
+
     return vib_free_energies, interpolated_entropies
 
 
@@ -139,82 +151,85 @@ def qha(NTV, ratio, input: Input):
     return all_volumes, all_energies, all_static_energies
 
 
-def entropy_fit(raw_volumes, raw_energies, discrete_temperatures, continuous_temperatures
+def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temperatures
                 ):
-    configurations_amount, volume_number = raw_volumes.shape
-    index = 0
-    interpolated_volumes = np.tile(
-        raw_volumes[index], (len(continuous_temperatures), 1))
-    calibrated_energy = calibrate_energy_on_reference(
-        raw_volumes, raw_energies, order=4, calibrate_index=index).T
-    interpolated_free_energies = []
+    """
+    interpolate between configurations
+    raw_volumes: a volume dataframe with the size of (# of configurations, # of volumes)
+    raw_quantity: a entropy dataframe with the size of (# of configurations, # of entropy)
+    discrete_temperatures: a array of the temperatures for all the configurations
+    continuous_temperatures: target temperatures array
+    """
 
-    def fit_it(x, y, vi, xnew):
-        def ffunc(x, a, b, c, d, e):
+    def fit_it(x, y, xnew):
+        """
+        Fitting function for entropy
+        """
+
+        def func(x, a, b, c):
             if x[0] == 0:
                 x[0] = 1
             x = np.array(x, dtype=np.float64)
-            h = HBAR * 2 * np.pi
-
             kx = K * x
             w = a + b * np.exp(x / 6000)
-            # w = a
             hw = HBAR * w
             hw_2kt = hw / (2 * kx)
-            # n = 1/(np.exp(hw / kx)-1)
 
-            return K * (hw_2kt / np.tanh(hw_2kt) - np.log(2 * np.sinh(hw_2kt))) * e
-            # return K * ((n+1)*np.log(n+1) - (n)*np.log(n))
-            # return np.log(x**1.5 - a) * b + c
+            return K * (hw_2kt / np.tanh(hw_2kt) - np.log(2 * np.sinh(hw_2kt))) * c
 
-        popt, _ = curve_fit(ffunc, x, y)
-        return ffunc(xnew, *popt)
+        popt, _ = curve_fit(func, x, y)
+        return func(xnew, *popt)
 
-    for i in range(volume_number):
-        # print(i, b3_to_a3( raw_volumes[0][i])/2)
-        x = continuous_temperatures
-
-        f1 = InterpolatedUnivariateSpline(
-            discrete_temperatures, calibrated_energy[i])
-
-        # f1.set_smoothing_factor()
-
-        y1 = f1(x)
-        # if i == 333:
-        #     print(y1, raw_volumes[0][i])
-
-        y = fit_it(discrete_temperatures, calibrated_energy[i], raw_volumes[0][i], x)
-
-        # y = fit_it(x, y1, raw_volumes[0][i], x)
-
-        interpolated_free_energies.append(
-            y
-        )
-    # InterpolatedUnivariateSpline < > UnivariateSpline
-
-    interpolated_free_energies = np.array(interpolated_free_energies)
-
-    return interpolated_free_energies.T, interpolated_volumes
-
-
-def spline_interpolation(raw_volumes, raw_energies, discrete_temperatures, continuous_temperatures
-                         ):
     configurations_amount, volume_number = raw_volumes.shape
     index = 0
     interpolated_volumes = np.tile(raw_volumes[index], (len(continuous_temperatures), 1))
-    calibrated_energy = calibrate_energy_on_reference(raw_volumes, raw_energies, order=4, calibrate_index=index).T
-    interpolated_free_energies = []
+    calibrated_quantities = calibrate_energy_on_reference(raw_volumes, raw_entropy, order=4, calibrate_index=index).T
+    interpolated_quantities = []
     for i in range(volume_number):
-        interpolated_free_energies.append(
-
-            InterpolatedUnivariateSpline(
-                discrete_temperatures, calibrated_energy[i])(continuous_temperatures)
+        """
+        Here decide which interpolation method to use
+        Case1: if the input comes with phonon calculated at 0K, we can use spline interpolation
+        Case2: if the input comes without phonon calculated at 0K, we need to fit the entropy
+        """
+        if 0 in discrete_temperatures:
+            rs = InterpolatedUnivariateSpline(discrete_temperatures, calibrated_quantities[i])(continuous_temperatures)
+        else:
+            rs = fit_it(discrete_temperatures, calibrated_quantities[i], continuous_temperatures)
+        interpolated_quantities.append(
+            rs
         )
     # InterpolatedUnivariateSpline < > UnivariateSpline
 
-    interpolated_free_energies = np.array(interpolated_free_energies)
+    interpolated_quantities = np.array(interpolated_quantities).T
 
-    return interpolated_free_energies.T, interpolated_volumes
+    return interpolated_quantities, interpolated_volumes
+
+
+def spline_interpolation(raw_volumes, raw_quantities, discrete_temperatures, continuous_temperatures
+                         ):
+    """
+    interpolate between configurations
+    raw_volumes: a volume dataframe with the size of (# of configurations, # of volumes)
+    raw_quantity: a quantity(eg. entropy/energy) dataframe with the size of (# of configurations, # of quantity)
+    discrete_temperatures: a array of the temperatures for all the configurations
+    continuous_temperatures: target temperatures array
+    """
+    configurations_amount, volume_number = raw_volumes.shape
+    index = 0
+    interpolated_volumes = np.tile(raw_volumes[index], (len(continuous_temperatures), 1))
+    calibrated_quantities = calibrate_energy_on_reference(raw_volumes, raw_quantities, order=4, calibrate_index=index).T
+    interpolated_quantities = []
+    for i in range(volume_number):
+        interpolated_quantities.append(
+
+            InterpolatedUnivariateSpline(
+                discrete_temperatures, calibrated_quantities[i])(continuous_temperatures)
+        )
+    # InterpolatedUnivariateSpline < > UnivariateSpline
+
+    interpolated_quantities = np.array(interpolated_quantities).T
+
+    return interpolated_quantities, interpolated_volumes
 
 
 def calibrate_energy_on_reference(volumes_before_calibration, energies_before_calibration,
@@ -246,6 +261,10 @@ def calibrate_energy_on_reference(volumes_before_calibration, energies_before_ca
 
 
 def entropy(temperature, frequency, weights):
+    """
+    Equation for calculate entropy from frequencies
+    """
+
     def vib_entropy(temperature, frequency):
         kt = K * temperature
         mat = np.zeros(frequency.shape)
