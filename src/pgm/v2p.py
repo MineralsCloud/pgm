@@ -81,6 +81,8 @@ def v2p(func_of_t_v, p_of_t_v, desired_pressures):
         for j in range(desired_pressures_amount):
             # The index of found desired pressure in the extended p
             k = int(rs[j])
+            # print(k)
+            # print(rs)
 
             x1, x2, x3, x4 = extended_p[i, k: k + 4]
             f1, f2, f3, f4 = extended_f[i, k: k + 4]
