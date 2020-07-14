@@ -80,6 +80,8 @@ def v2p(func_of_t_v, p_of_t_v, desired_pressures):
         for j in range(desired_pressures_amount):
             # The index of found desired pressure in the extended p
             k = int(rs[j])
+            # print(k)
+            # print(rs)
 
             # Solve the unpacked errors
             if k >= desired_pressures_amount - 4:
