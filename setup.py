@@ -11,14 +11,25 @@
 import sys
 
 from pkg_resources import require, VersionConflict
-from setuptools import setup
+from setuptools import setup, find_packages
 
 try:
     require('setuptools>=38.3')
 except VersionConflict:
     print("Error: version of setuptools is too old (<38.3)!")
     sys.exit(1)
-
+setup(name='pgm',
+      version='0.0.1',
+      packages=[
+          'pgm',
+          'pgm.reader',
+          'pgm.cli',
+          'pgm.util',
+      ],
+      entry_points={
+          'console_scripts': [
+              'pgm=pgm.cli:main'
+          ], })
 
 if __name__ == "__main__":
     setup(use_pyscaffold=True)

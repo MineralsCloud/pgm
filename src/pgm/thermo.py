@@ -1,10 +1,8 @@
 from lazy_property import LazyProperty
 from .v2p import v2p
 from .util.unit_conversion import *
-from .util.tools import find_value\
-    # , is_monotonic_increasing
+from .util.tools import find_value
 import numpy as np
-# from pgm.geotherm import geotherm
 
 
 def calculate_derivatives(xs, fs):
