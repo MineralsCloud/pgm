@@ -17,8 +17,8 @@ from scipy.integrate import cumtrapz
 from scipy.optimize import curve_fit
 from .settings import Settings
 
-from sympy import symbols,tanh,sinh,log
-from sympy.solvers import solve
+# from sympy import symbols,tanh,sinh,log
+# from sympy.solvers import solve
 
 HBAR = 100 / pc['electron volt-inverse meter relationship'][0] / pc['Rydberg constant times hc in eV'][0]
 K = pc['Boltzmann constant in eV/K'][0] / pc['Rydberg constant times hc in eV'][0]
@@ -201,36 +201,29 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
         """
         Fitting function for  ...
         return the entropy in a finer T grid by interpolating the 'efficient' frequency
+        - important: not working!
         """
-        # freq = frequency[i][j][k]
-        # hw = HBAR * freq
-        # hw_2kt = hw / (2 * kt)
-        # mat[i][j][k] = K * (hw_2kt / np.tanh(hw_2kt) - np.log(2 * np.sinh(hw_2kt)))
-
-        freq_eff = []
-        print("start")
-        for i in range(len(t)):
-            si = s[i]
-            ti = t[i]
-            a = symbols('a', real=True, positive=True)
-
-            # a = symbols('a')
-            # eq = round(K*10**7, 3) * (a / tanh(a) - log(2 * sinh(a))) - round(si*10**7, 3)
-
-            eq = round(K*10**7, 3) * ((1+a)*log(1+a) - a * log(a)) - round(si*10**7, 3)
-
-            print(eq)
-            solutions = solve(eq, quick=True)
-            print(solutions)
-
-            # onlysolution = solutions[0]
-            # hw_2kt_eff = onlysolution.evalf(subs=onlysolution)
-            # kt =  K * ti
-            # hw_eff = hw_2kt_eff * (2*kt)
-            # w_eff = hw_eff/HBAR
-            # freq_eff.append(w_eff)
-
-        print(freq_eff)
+        # freq_eff = []
+        # print("start")
+        # for i in range(len(t)):
+        #     si = s[i]
+        #     ti = t[i]
+        #     a = symbols('a', real=True, positive=True)
+        #
+        #     # a = symbols('a')
+        #     # eq = round(K*10**7, 3) * (a / tanh(a) - log(2 * sinh(a))) - round(si*10**7, 3)
+        #     eq = round(K*10**7, 3) * ((1+a)*log(1+a) - a * log(a)) - round(si*10**7, 3)
+        #     print(eq)
+        #     solutions = solve(eq, quick=True)
+        #     print(solutions)
+        #     # onlysolution = solutions[0]
+        #     # hw_2kt_eff = onlysolution.evalf(subs=onlysolution)
+        #     # kt =  K * ti
+        #     # hw_eff = hw_2kt_eff * (2*kt)
+        #     # w_eff = hw_eff/HBAR
+        #     # freq_eff.append(w_eff)
+        #
+        # print(freq_eff)
 
         return None
 
@@ -245,8 +238,6 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
         Case1: if the input comes with phonon calculated at 0K, we can use spline interpolation
         Case2: if the input comes without phonon calculated at 0K, we need to fit the entropy
         """
-
-        # fit_freq(discrete_temperatures, calibrated_quantities[i], continuous_temperatures)
 
         if 0 in discrete_temperatures:
             rs = InterpolatedUnivariateSpline(discrete_temperatures, calibrated_quantities[i])(continuous_temperatures)
