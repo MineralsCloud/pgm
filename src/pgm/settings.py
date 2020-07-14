@@ -8,6 +8,11 @@ import collections
 from typing import Any, Dict, Tuple, Union
 import numpy as np
 import yaml
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
+
 
 # ===================== What can be exported? =====================
 __all__ = ['DEFAULT_SETTINGS', 'Settings']
@@ -43,16 +48,16 @@ class Settings:
     def read_from_yaml(self, filename: str):
         if not filename.endswith('.yaml'):
             filename += '.yaml'
-        with open(filename, 'w') as f:
-            dic = yaml.load(f)
-
-        self.NV = dic['NV']
-        self.NT = dic['NT']
-        self.folder = dic['folder']
-        self.initP = dic['initP']
-        self.finalP = dic['finalP']
-        self.ratio = dic['ratio']
-        self.temperature = dic['temperature']
-        self.output_directory = dic['output_directory']
-        self.continuous_temperature = np.linspace(self.temperature[0], self.temperature[-1], self.NT)
-        self.desired_pressure = np.linspace(self.initP, self.finalP, self.NV)
+        with open(filename, 'r') as f:
+            dic = yaml.load(f, Loader=Loader)
+            # print(dic)
+            self.NV = dic['NV']
+            self.NT = dic['NT']
+            self.folder = dic['folder']
+            self.initP = dic['initP']
+            self.finalP = dic['finalP']
+            self.ratio = dic['ratio']
+            self.temperature = dic['temperature']
+            self.output_directory = dic['output_directory']
+            self.continuous_temperature = np.linspace(self.temperature[0], self.temperature[-1], self.NT)
+            self.desired_pressure = np.linspace(self.initP, self.finalP, self.NV)
