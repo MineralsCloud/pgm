@@ -62,7 +62,6 @@ def v2p(func_of_t_v, p_of_t_v, desired_pressures):
     # Put three parts together
     # third column, function tv, last fourth column
     # TODO: Still confused of the artificial choice of 3 and -4. Why? Can't I just use 0 and -1 lmao?
-    # Made a little test, feel like 0 and -1 is fine by me. Stick to 0 -1 for now.
     extended_f = np.hstack(
         (func_of_t_v[:, 0].reshape(-1, 1), func_of_t_v, func_of_t_v[:, -1].reshape(-1, 1)))
     extended_p = np.hstack(
@@ -82,8 +81,13 @@ def v2p(func_of_t_v, p_of_t_v, desired_pressures):
             # The index of found desired pressure in the extended p
             k = int(rs[j])
 
-            x1, x2, x3, x4 = extended_p[i, k: k + 4]
-            f1, f2, f3, f4 = extended_f[i, k: k + 4]
+            # Solve the unpacked errors
+            if k >= desired_pressures_amount - 4:
+                x1 = x2 = x3 = x4 = extended_p[i, -1]
+                f1 = f2 = f3 = f4 = extended_f[i, -1]
+            else:
+                x1, x2, x3, x4 = extended_p[i, k: k + 4]
+                f1, f2, f3, f4 = extended_f[i, k: k + 4]
 
             result[i, j] = lagrange4(
                 desired_pressures[j], x1, x2, x3, x4, f1, f2, f3, f4)

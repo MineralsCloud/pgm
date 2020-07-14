@@ -171,7 +171,7 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
                 x[0] = 1
             x = np.array(x, dtype=np.float64)
             kx = K * x
-            w = a + b * np.exp(x / 6000)
+            w = a + b * np.exp(x / np.max(x))
             hw = HBAR * w
             hw_2kt = hw / (2 * kx)
 
