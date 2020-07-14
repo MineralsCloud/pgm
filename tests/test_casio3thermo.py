@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # folder = 'data/output/%sK/input.txt'
 
 
-    calc = FreeEnergyCalculation(NV, NT, initP, finalP, ratio, discrete_temperatures, folder)
+    calc = FreeEnergyCalculation( NV, NT, initP, finalP, ratio, discrete_temperatures, folder)
     total_free_energies, vib_entropies, volumes, desired_pressure, continuous_temperature = calc.calculate()
     interpolation = ThermodynamicProperties(volumes, temperature, gpa_to_ry_b3(desired_pressure), total_free_energies)
     sqha_volume = b3_to_a3(volumes)
@@ -55,8 +55,7 @@ if __name__ == "__main__":
     plt.plot(temperature[0:], ry_to_ev(
         total_free_energies[:, index_v][0:]), lw=3, label="V1")
 
-    plt.scatter(discrete_temperatures, [-42.55006652, - 43.92111448, -
-    45.44998553, - 47.10515852, - 48.86583903, - 50.71736489])
+    plt.scatter(discrete_temperatures, [ - 42.55006652, - 43.92111448, -45.44998553, - 47.10515852, - 48.86583903, - 50.71736489])
 
     v = 40.258321495537544
     index_v = find_value(vols, v)
@@ -64,8 +63,7 @@ if __name__ == "__main__":
     plt.plot(temperature[0:], ry_to_ev(
         total_free_energies[:, index_v][0:]), lw=3, label="V2")
 
-    plt.scatter(discrete_temperatures, [-41.89413855, - 43.17445305, -
-    44.61424974, - 46.1817799, - 47.85587506, - 49.62144974])
+    plt.scatter(discrete_temperatures, [ - 41.89413855, - 43.17445305, - 44.61424974, - 46.1817799, - 47.85587506, - 49.62144974])
 
     v = 36.7689539353574
     index_v = find_value(vols, v)
@@ -73,8 +71,7 @@ if __name__ == "__main__":
     plt.plot(temperature[0:], ry_to_ev(
         total_free_energies[:, index_v][0:]), lw=3, label="V3")
 
-    plt.scatter(discrete_temperatures, [-40.58847835, - 41.79457502, -
-    43.15998955, - 44.65348588, - 46.25422376, - 47.94737818])
+    plt.scatter(discrete_temperatures, [ - 40.58847835, - 41.79457502, - 43.15998955, - 44.65348588, - 46.25422376, - 47.94737818])
 
     v = 34.34308402343736
     index_v = find_value(vols, v)
@@ -82,7 +79,7 @@ if __name__ == "__main__":
     plt.plot(temperature[0:], ry_to_ev(
         total_free_energies[:, index_v][0:]), lw=3, label="V4")
 
-    plt.scatter(discrete_temperatures, [-39.05674738, - 40.20836091, -41.51877576, - 42.9571361, - 44.5028067, - 46.14109688])
+    plt.scatter(discrete_temperatures, [ - 39.05674738, - 40.20836091, -41.51877576, - 42.9571361, - 44.5028067, - 46.14109688])
 
     v = 32.487552716802675
     index_v = find_value(vols, v)

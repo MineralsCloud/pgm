@@ -200,13 +200,17 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
             si = s[i]
             ti = t[i]
             a = symbols('a', real=True, positive=True)
-            # eq = [round(K,8) * (a / tanh(a) - log(2 * sinh(a))) - si]
-            eq = K * ((1+a) * log(1+a) - a*log(a)) - s[i]
+
+            # a = symbols('a')
+            # eq = round(K*10**7, 3) * (a / tanh(a) - log(2 * sinh(a))) - round(si*10**7, 3)
+
+            eq = round(K*10**7, 3) * ((1+a)*log(1+a) - a * log(a)) - round(si*10**7, 3)
+
             print(eq)
-            solutions = solve(f=eq,  verify=False)
+            solutions = solve(eq, quick=True)
             print(solutions)
+
             # onlysolution = solutions[0]
-            #
             # hw_2kt_eff = onlysolution.evalf(subs=onlysolution)
             # kt =  K * ti
             # hw_eff = hw_2kt_eff * (2*kt)
