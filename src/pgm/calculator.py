@@ -25,7 +25,7 @@ class FreeEnergyCalculation:
     """
     Calculate free energy using pgm
     """
-    def __int__(self, setting: Settings):
+    def __init__(self, setting: Settings):
         self.NV = setting.NV
         self.NT = setting.NT
         self.ratio = setting.ratio

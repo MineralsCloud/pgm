@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 from pgm.util.unit_conversion import gpa_to_ry_b3, ry_b3_to_gpa, ry_to_j_mol, ry_to_ev, b3_to_a3
 from pgm.util.tools import find_value
 from pgm.calculator import pgm, spline_interpolation, qha, FreeEnergyCalculation
+from pgm.settings import Settings
 from pgm.thermo import ThermodynamicProperties
 from pgm.data import save_data
 from pgm.reader.read_input import Input
@@ -31,32 +32,43 @@ if __name__ == "__main__":
     # mpl.rc('font', **font)
     mpl.rcParams['axes.linewidth'] = 1.8
     # mpl.rcParams['mathtext.fontset'] = 'stix'
-
-    NV = 501
-    NT = 251
-    folder = 'data/casio3/%sK.txt'
-    initP = 0
-    finalP = 500
-    ratio = 1.2  # must be the same as qha input
-
-
-    discrete_temperatures = [1500, 2000, 2500, 3000, 3500, 4000]
-    temperature = np.linspace(1500, 4000, NT)
-
-    temp_list = list(temperature)
-
-    desired_pressure = np.linspace(0, 500, NV)
+    para = {
+        'NV': 501,
+        'NT': 251,
+        'folder': 'data/casio3/%sK.txt',
+        'initP' : 0,
+        'finalP' : 500,
+        'ratio' : 1.2,
+        'output_directory' : './results/',
+        'temperature' : [1500, 2000, 2500, 3000, 3500, 4000]
+    }
+    setting = Settings(para)
+    # setting.read_from_dict(para)
+    # NV = 501
+    # NT = 251
+    # folder = 'data/casio3/%sK.txt'
+    # initP = 0
+    # finalP = 500
+    # ratio = 1.2  # must be the same as qha input
+    #
+    # discrete_temperatures = [1500, 2000, 2500, 3000, 3500, 4000]
+    # temperature = np.linspace(1500, 4000, NT)
+    #
+    # temp_list = list(temperature)
+    #
+    # desired_pressure = np.linspace(0, 500, NV)
     # folder = 'data/output/%sK/input.txt'
-
 
     # vib_energies, vib_entropies = sqha(
     #     len(desired_pressure), ratio, discrete_temperatures, temperature, folder)
     # volumes, energies, static_energies = calculator(
     #     len(desired_pressure), ratio, discrete_temperatures, folder)
 
-    calc = FreeEnergyCalculation(NV, NT, initP, finalP, ratio, discrete_temperatures, folder)
+    calc = FreeEnergyCalculation(setting)
     total_free_energies, vib_entropies, volumes, desired_pressure, continuous_temperature = calc.calculate()
     # thermo = ThermodynamicProperties(volumes, temperature, gpa_to_ry_b3(desired_pressure), total_free_energies)
+    temperature = setting.continuous_temperature
+    discrete_temperatures = setting.temperature
     sqha_volume = b3_to_a3(volumes)
 
     # energies[0] = energies[1]

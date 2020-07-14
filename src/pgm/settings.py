@@ -28,34 +28,17 @@ class Settings:
     """
     Read settings from a yaml file
     """
-
-    # def __init__(self, filename: str):
-    # if not filename.endswith('.yaml'):
-    #     filename += '.yaml'
-    # with open(filename, 'w') as f:
-    #     dic = yaml.load(f)
-    #
-    # self.NV = dic['NV']
-    # self.NT = dic['NT']
-    # self.folder = dic['folder']
-    # self.initP = dic['initP']
-    # self.finalP = dic['finalP']
-    # self.ratio = dic['ratio']
-    # self.temperature = dic['temperature']
-    # self.output_directory = dic['output_directory']
-    # self.continuous_temperature = np.linspace(self.temperature[0], self.temperature[-1], self.NT)
-    # self.desired_pressure = np.linspace(self.initP, self.finalP, self.NV)
-    def __init__(self, DEFAULT_SETTINGS):
-        self.NV = DEFAULT_SETTINGS['NV']
-        self.NT = DEFAULT_SETTINGS['NT']
-        self.folder = DEFAULT_SETTINGS['folder']
-        self.initP = DEFAULT_SETTINGS['initP']
-        self.finalP = DEFAULT_SETTINGS['finalP']
-        self.ratio = DEFAULT_SETTINGS['ratio']
-        self.temperature = DEFAULT_SETTINGS['temperature']
-        self.output_directory = DEFAULT_SETTINGS['output_directory']
-        self.continuous_temperature = np.zeros(1)
-        self.desired_pressure = np.zeros(1)
+    def __init__(self, dic: Dict):
+        self.NV = dic['NV']
+        self.NT = dic['NT']
+        self.folder = dic['folder']
+        self.initP = dic['initP']
+        self.finalP = dic['finalP']
+        self.ratio = dic['ratio']
+        self.temperature = dic['temperature']
+        self.output_directory = dic['output_directory']
+        self.continuous_temperature = np.linspace(self.temperature[0], self.temperature[-1], self.NT)
+        self.desired_pressure = np.linspace(self.initP, self.finalP, self.NV)
 
     def read_from_yaml(self, filename: str):
         if not filename.endswith('.yaml'):
