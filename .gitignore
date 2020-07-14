@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Temporary and binary files
 *~
 *.py[cod]
@@ -153,4 +152,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
->>>>>>> 977611af6bfeac9715e11c5300e23fe7f46ba508
+
+/tests/*.png
+/tests/*.pdf
+/tests/*.jpg
