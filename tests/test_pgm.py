@@ -31,7 +31,7 @@ if __name__ == "__main__":
     para = {
         'NV': 450,
         'NT': 801,
-        'folder': 'data/epaw0/1500GPa_T_trick/%sK/input.txt',
+        'folder': 'data/epaw0/1500GPa/%sK/input.txt',
         'initP': 30,
         'finalP': 400,
         'ratio': 2,

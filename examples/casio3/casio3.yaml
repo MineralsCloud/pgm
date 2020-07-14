@@ -1,0 +1,14 @@
+NV: 501
+NT: 251
+folder: './%sK.txt'
+initP : 0
+finalP : 150
+ratio : 1.5
+output_directory : './results/'
+temperature :
+            - 1500
+            - 2000
+            - 2500
+            - 3000
+            - 3500
+            - 4000
