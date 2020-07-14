@@ -1,5 +1,9 @@
 """
 Core module for energy calculation in pgm
+   :platform: Unix, Windows, Mac, Linux
+   :synopsis:
+.. moduleauthor:: Hongjin Wang <hw2626@columbia.edu>
+.. moduleauthor:: Jingyi Zhuang <jz2907@columbia.edu>
 """
 
 from pgm.reader.read_input import Input
@@ -11,6 +15,7 @@ from typing import Callable, Optional
 from scipy.interpolate import UnivariateSpline, InterpolatedUnivariateSpline
 from scipy.integrate import cumtrapz
 from scipy.optimize import curve_fit
+from .settings import Settings
 
 HBAR = 100 / pc['electron volt-inverse meter relationship'][0] / pc['Rydberg constant times hc in eV'][0]
 K = pc['Boltzmann constant in eV/K'][0] / pc['Rydberg constant times hc in eV'][0]
@@ -20,15 +25,23 @@ class FreeEnergyCalculation:
     """
     Calculate free energy using pgm
     """
+    def __int__(self, setting: Settings):
+        self.NV = setting.NV
+        self.NT = setting.NT
+        self.ratio = setting.ratio
+        self.folder = setting.folder
+        self.discrete_temperatures = setting.temperature
+        self.continuous_temperature = setting.continuous_temperature
+        self.pressures = setting.continuous_temperature
 
-    def __init__(self, NV, NT, initP, finalP, ratio, discrete_temperatures, folder):
-        self.NV = NV
-        self.NT = NT
-        self.ratio = ratio
-        self.folder = folder
-        self.discrete_temperatures = discrete_temperatures
-        self.continuous_temperature = np.linspace(discrete_temperatures[0], discrete_temperatures[-1], NT)
-        self.pressures = np.linspace(initP, finalP, NV)
+    # def __init__(self, NV, NT, initP, finalP, ratio, discrete_temperatures, folder):
+    #     self.NV = NV
+    #     self.NT = NT
+    #     self.ratio = ratio
+    #     self.folder = folder
+    #     self.discrete_temperatures = discrete_temperatures
+    #     self.continuous_temperature = np.linspace(discrete_temperatures[0], discrete_temperatures[-1], NT)
+    #     self.pressures = np.linspace(initP, finalP, NV)
 
     def calculate(self):
         calc_input = Input(self.folder, self.discrete_temperatures)
@@ -100,9 +113,9 @@ def qha(NTV, ratio, input: Input):
     """
     Computes qha energy
     return:
-    all_volumes: interpolated volumes at different discreate temperatures
-    all_energies: interpolated qha energies at different discreate temperatures
-    all_static_energies: interpolated static energies at different discreate temperatures
+    all_volumes: interpolated volumes at different discrete temperatures
+    all_energies: interpolated qha energies at different discrete temperatures
+    all_static_energies: interpolated static energies at different discrete temperatures
     """
 
     def qha_energy(temperature, frequency, weights):
