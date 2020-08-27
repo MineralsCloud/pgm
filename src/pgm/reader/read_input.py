@@ -6,8 +6,8 @@ from typing import Iterator, Union, Tuple
 import numpy as np
 from scientific_string import strings_to_integers
 from text_stream import TextStream
+from pgm.util.tools import is_monotonic_decreasing
 
-# from qha.type_aliases import Vector, Array3D
 
 # ===================== What can be exported? =====================
 __all__ = ['Input', 'read_input']
@@ -135,5 +135,8 @@ def read_input(inp: Union[str, pathlib.PurePath]):
 
     if i != volumes_amount:
         raise ValueError('The number of volumes detected is not equal to what specified in head! Check your file!')
+
+    if not is_monotonic_decreasing(volumes):
+        raise ValueError('The volumes in the input file is not monotonicly decreasing, please check your input file')
 
     return formula_unit_number, volumes, static_energies, frequencies, q_weights

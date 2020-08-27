@@ -46,12 +46,14 @@ class FreeEnergyCalculation:
     def calculate(self):
         calc_input = Input(self.folder, self.discrete_temperatures)
 
+        # calculate vibrational free energies using pgm
         vib_energies, vib_entropies = pgm(self.NV, self.ratio, self.continuous_temperature, calc_input)
 
         volumes, energies, static_energies = qha(self.NV, self.ratio, calc_input)
 
         energies[0] = np.zeros(len(energies[0]))
 
+        # interpolation between configurations(temperatures)
         static_free_energies, interpolated_volumes = spline_interpolation(volumes, static_energies,
                                                                           self.discrete_temperatures,
                                                                           self.continuous_temperature)
@@ -150,8 +152,15 @@ def qha(NTV, ratio, input: Input):
     for temp in input_dict.keys():
         vib_f = qha_energy(temp, input_dict[temp][3], input_dict[temp][
             4])  # compute vibrational free energies using qha formula, only vibrational!
+
+        # input_dict[temp][1] is the volumes from a single qha input file
+        # inter is used to calculate the strain based on the volume
         inter = Interpolation(input_dict[temp][1], NTV, ratio)
+
+        # input_dict[temp][2] is the static free energy from a single qha input file
+        # Then interpolate between the static free energy using the strain calculated in inter
         static_f = inter.fitting(input_dict[temp][2])
+
         new_vib_f = inter.fitting(vib_f)
 
         all_volumes.append(inter.out_volumes)
