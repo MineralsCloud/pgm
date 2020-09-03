@@ -16,6 +16,8 @@ from scipy.interpolate import UnivariateSpline, InterpolatedUnivariateSpline
 from scipy.integrate import cumtrapz
 from scipy.optimize import curve_fit
 from .settings import Settings
+import numba
+from numba import jit
 
 # from sympy import symbols,tanh,sinh,log
 # from sympy.solvers import solve
@@ -28,6 +30,7 @@ class FreeEnergyCalculation:
     """
     Calculate free energy using pgm
     """
+
     def __init__(self, setting: Settings):
         self.NV = setting.NV
         self.NT = setting.NT
@@ -128,22 +131,34 @@ def qha(NTV, ratio, input: Input):
         Compute vibrational free energies using qha formula
         """
 
+        # def vib_energy(temperature, frequency):
+        #     kt = K * temperature
+        #     mat = np.zeros(frequency.shape)
+        #     for i in range(frequency.shape[0]):
+        #         for j in range(frequency.shape[1]):
+        #             for k in range(frequency.shape[2]):
+        #                 if frequency[i][j][k] <= 0:
+        #                     mat[i][j][k] = 0
+        #                 else:
+        #                     freq = frequency[i][j][k]
+        #                     hw = HBAR * freq
+        #                     mat[i][j][k] = 1 / 2 * hw + kt * np.log(1 - np.exp(-hw / kt))
+        #     return mat
+
+        @jit(nopython=True, parallel=True)
         def vib_energy(temperature, frequency):
             kt = K * temperature
-            mat = np.zeros(frequency.shape)
-            for i in range(frequency.shape[0]):
-                for j in range(frequency.shape[1]):
-                    for k in range(frequency.shape[2]):
-                        if frequency[i][j][k] <= 0:
-                            mat[i][j][k] = 0
-                        else:
-                            freq = frequency[i][j][k]
-                            hw = HBAR * freq
-                            mat[i][j][k] = 1 / 2 * hw + kt * np.log(1 - np.exp(-hw / kt))
-            return mat
+            shape = frequency.shape
+            frequency = frequency.reshape(-1)
+
+            # if frequency is negative, they are treated as 0
+            frequency[frequency < 0] = 0.0
+            hw = HBAR * frequency
+            result = 1 / 2 * hw + kt * np.log(1 - np.exp(-hw / kt))
+            return result.reshape(shape)
 
         scaled_q_weights = weights / np.sum(weights)
-        vibrational_energies = np.dot(vib_energy(temperature, frequency).sum(axis=2), scaled_q_weights)
+        vibrational_energies = np.dot(np.nan_to_num(vib_energy(temperature, frequency)).sum(axis=2), scaled_q_weights)
 
         return vibrational_energies
 
@@ -206,7 +221,7 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
         popt, _ = curve_fit(func, x, y)
         return func(xnew, *popt)
 
-    def fit_freq(t,s,tnew):
+    def fit_freq(t, s, tnew):
         """
         Fitting function for  ...
         return the entropy in a finer T grid by interpolating the 'efficient' frequency
@@ -322,23 +337,41 @@ def entropy(temperature, frequency, weights):
     Equation for calculate entropy from frequencies
     """
 
+    # def vib_entropy(temperature, frequency):
+    #     kt = K * temperature
+    #     mat = np.zeros(frequency.shape)
+    #     for i in range(frequency.shape[0]):
+    #         for j in range(frequency.shape[1]):
+    #             for k in range(frequency.shape[2]):
+    #                 if frequency[i][j][k] <= 0:
+    #                     mat[i][j][k] = 0
+    #                 else:
+    #                     freq = frequency[i][j][k]
+    #                     hw = HBAR * freq
+    #                     hw_2kt = hw / (2 * kt)
+    #                     mat[i][j][k] = K * (hw_2kt / np.tanh(hw_2kt) - np.log(2 * np.sinh(hw_2kt)))
+    #     return mat
+    #
+    # scaled_q_weights = weights / np.sum(weights)
+    # vibrational_entropies = np.dot(vib_entropy(temperature, frequency).sum(axis=2), scaled_q_weights)
+
+    @jit(nopython=True, parallel=True)
     def vib_entropy(temperature, frequency):
         kt = K * temperature
-        mat = np.zeros(frequency.shape)
-        for i in range(frequency.shape[0]):
-            for j in range(frequency.shape[1]):
-                for k in range(frequency.shape[2]):
-                    if frequency[i][j][k] <= 0:
-                        mat[i][j][k] = 0
-                    else:
-                        freq = frequency[i][j][k]
-                        hw = HBAR * freq
-                        hw_2kt = hw / (2 * kt)
-                        mat[i][j][k] = K * (hw_2kt / np.tanh(hw_2kt) - np.log(2 * np.sinh(hw_2kt)))
-        return mat
+        shape = frequency.shape
+        frequency = frequency.reshape(-1)
+        # if frequency is negative, they are treated as 0
+        frequency[frequency < 0] = 0.0
+
+        # result = np.zeros(len(frequency))
+        hw = HBAR * frequency
+        hw_2kt = hw / (2 * kt)
+        result = K * (hw_2kt / np.tanh(hw_2kt) - np.log(2 * np.sinh(hw_2kt)))
+
+        return result.reshape(shape)
 
     scaled_q_weights = weights / np.sum(weights)
-    vibrational_entropies = np.dot(vib_entropy(temperature, frequency).sum(axis=2), scaled_q_weights)
+    vibrational_entropies = np.dot(np.nan_to_num(vib_entropy(temperature, frequency)).sum(axis=2), scaled_q_weights)
 
     return vibrational_entropies
 

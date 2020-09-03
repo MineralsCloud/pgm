@@ -11,12 +11,14 @@ from typing import Optional
 
 import numpy as np
 from numpy.linalg import inv
+import warnings
 # from qha.type_aliases import Matrix, Vector
 
 # ===================== What can be exported? =====================
 __all__ = ['polynomial_least_square_fitting', 'apply_finite_strain_fitting']
 
-
+###TODO: Dangerous! This arise when I try to involve numba in the calculator, need to be change later
+warnings.simplefilter(action = "ignore", category = RuntimeWarning)
 def polynomial_least_square_fitting(xs, ys, new_xs, order: Optional[int] = 3):
     """
     The algorithm is referenced from the
