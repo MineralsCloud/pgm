@@ -19,7 +19,7 @@ except VersionConflict:
     print("Error: version of setuptools is too old (<38.3)!")
     sys.exit(1)
 setup(name='pgm',
-      version='0.0.1',
+      version='0.0.2',
       packages=[
           'pgm',
           'pgm.reader',
