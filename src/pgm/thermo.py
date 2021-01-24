@@ -288,6 +288,10 @@ class ThermodynamicProperties:
         return thermal_expansion_coefficient(self.__temperature, self.v_tp)
 
     @LazyProperty
+    def h_tv(self):
+        return self.thermal_potential['H']
+
+    @LazyProperty
     def h_tp(self):
         return v2p(self.h_tv, self.p_tv, self.__pressure)
 
