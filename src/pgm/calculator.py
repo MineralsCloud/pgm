@@ -38,7 +38,7 @@ class FreeEnergyCalculation:
         self.folder = setting.folder
         self.discrete_temperatures = setting.temperature
         self.continuous_temperature = setting.continuous_temperature
-        self.pressures = setting.continuous_temperature
+        self.pressures = setting.desired_pressure
 
     # def __init__(self, NV, NT, initP, finalP, ratio, discrete_temperatures, folder):
     #     self.NV = NV
@@ -204,15 +204,17 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
     def fit_it(x, y, xnew):
         """
         Fitting function for entropy
+        For fitting function for frequency, see https://journals.aps.org/prb/pdf/10.1103/PhysRevB.89.094109
         """
 
-        def func(x, a, b, c):
+        def func(x, a, b, c, d):
             if x[0] == 0:
                 x[0] = 1
             x = np.array(x, dtype=np.float64)
             kx = K * x
-            w = a + b * np.exp(x / np.max(x))
-
+            # w = a + b * np.exp(x / np.max(x))
+            w = a * np.exp(-x / b) + d
+            # w = a * x * x + b * x + d
             hw = HBAR * w
             hw_2kt = hw / (2 * kx)
 
