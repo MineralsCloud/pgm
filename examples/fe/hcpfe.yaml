@@ -16,3 +16,15 @@ temperature :
     - 6000
     - 7000
     - 8000
+
+pressure : True
+entropy : True
+internal_energy : True
+enthalpy : True
+gibbs_free_energy : True
+thermal_expansion_coefficient : True
+isothermal_bulk_modulus : True
+grunesien_parameter : True
+adiabatic_bulk_modulus : True
+volumetric_heat_capacity : True
+isobaric_heat_capacity : True
