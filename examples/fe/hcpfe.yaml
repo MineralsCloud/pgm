@@ -24,7 +24,7 @@ enthalpy : True
 gibbs_free_energy : True
 thermal_expansion_coefficient : True
 isothermal_bulk_modulus : True
-grunesien_parameter : True
+gruneisen_parameter : True
 adiabatic_bulk_modulus : True
 volumetric_heat_capacity : True
 isobaric_heat_capacity : True
