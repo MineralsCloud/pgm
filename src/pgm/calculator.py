@@ -266,7 +266,8 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
         """
 
         if 0 in discrete_temperatures:
-            rs = InterpolatedUnivariateSpline(discrete_temperatures, calibrated_quantities[i])(continuous_temperatures)
+            # rs = InterpolatedUnivariateSpline(discrete_temperatures, calibrated_quantities[i])(continuous_temperatures)
+            rs = fit_it(discrete_temperatures, calibrated_quantities[i], continuous_temperatures)
         else:
             rs = fit_it(discrete_temperatures, calibrated_quantities[i], continuous_temperatures)
         interpolated_quantities.append(
