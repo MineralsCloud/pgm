@@ -1,14 +1,12 @@
-NV: 500
-NT: 500
+NV: 1171
+NT: 801
 folder: './1500GPa/%sK/input.txt'
 initP : 30
-finalP : 400
+finalP : 1200
 ratio : 1.5
 output_directory : './results/'
 temperature :
     - 0
-    - 300
-    - 1000
     - 2000
     - 3000
     - 4000
@@ -24,7 +22,7 @@ enthalpy : True
 gibbs_free_energy : True
 thermal_expansion_coefficient : True
 isothermal_bulk_modulus : True
-grunesien_parameter : True
+gruneisen_parameter : True
 adiabatic_bulk_modulus : True
 volumetric_heat_capacity : True
 isobaric_heat_capacity : True
