@@ -212,14 +212,16 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
                 x[0] = 1
             x = np.array(x, dtype=np.float64)
             kx = K * x
-            # w = a + b * np.exp(x / np.max(x))
-            w = a * np.exp(-x / b) + d
+            # x = x/np.max(x)
+            w = a + b * np.exp(x / (np.max(x)*1.5))
+            # w = a * (np.exp(-x/ b)-1)
             # w = a * x * x + b * x + d
             hw = HBAR * w
             hw_2kt = hw / (2 * kx)
 
             return K * (hw_2kt / np.tanh(hw_2kt) - np.log(2 * np.sinh(hw_2kt))) * c
 
+        
         popt, _ = curve_fit(func, x, y)
         return func(xnew, *popt)
 
@@ -266,7 +268,8 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
         """
 
         if 0 in discrete_temperatures:
-            rs = InterpolatedUnivariateSpline(discrete_temperatures, calibrated_quantities[i])(continuous_temperatures)
+            # rs = InterpolatedUnivariateSpline(discrete_temperatures, calibrated_quantities[i])(continuous_temperatures)
+            rs = fit_it(discrete_temperatures, calibrated_quantities[i], continuous_temperatures)
         else:
             rs = fit_it(discrete_temperatures, calibrated_quantities[i], continuous_temperatures)
         interpolated_quantities.append(

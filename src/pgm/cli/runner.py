@@ -43,7 +43,8 @@ class PgmRunner(CommandHandler):
         print("Calculating free energies")
         total_free_energies, vib_entropies, volumes, desired_pressure, continuous_temperature = calc.calculate()
         # print(desired_pressure)
-        # print(total_free_energies)
+        print(total_free_energies)
+        print( vib_entropies)
         print("Calculating thermodynamics properties")
         thermo = ThermodynamicProperties(volumes, continuous_temperature, gpa_to_ry_b3(desired_pressure),
                                          total_free_energies)
@@ -61,6 +62,7 @@ class PgmRunner(CommandHandler):
         # self.cp_tp = dic['isobaric_heat_capacity']
 
         save_data(ry_to_ev(total_free_energies), continuous_temperature, b3_to_a3(volumes), out_dir + 'ftv_ev_a3')
+    
 
         if (user_settings.ptv):
             ptv = ry_b3_to_gpa(thermo.p_tv)
