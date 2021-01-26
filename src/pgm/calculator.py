@@ -204,7 +204,7 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
     def fit_it(x, y, xnew):
         """
         Fitting function for entropy
-        For fitting function for frequency, see https://journals.aps.org/prb/pdf/10.1103/PhysRevB.89.094109
+        For fitting function, see https://journals.aps.org/prb/pdf/10.1103/PhysRevB.89.094109
         """
 
         def func(x, a, b, c, d):
@@ -212,9 +212,9 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
                 x[0] = 1
             x = np.array(x, dtype=np.float64)
             kx = K * x
-            # x = x/np.max(x)
-            w = a + b * np.exp(x / (np.max(x)*1.5))
-            # w = a * (np.exp(-x/ b)-1)
+
+            w = a + b * np.exp(x / np.max(x))
+            # w = a * np.exp(-x / b) + d
             # w = a * x * x + b * x + d
             hw = HBAR * w
             hw_2kt = hw / (2 * kx)
