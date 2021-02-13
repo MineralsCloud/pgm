@@ -1,12 +1,14 @@
-NV: 1171
+NV: 451
 NT: 801
-folder: './1500GPa/%sK/input.txt'
-initP : 30
-finalP : 1200
-ratio : 1.5
+folder: './data/%sK'
+initP : 50
+finalP : 500
+ratio : 1.2
 output_directory : './results/'
 temperature :
     - 0
+    - 300
+    - 1000
     - 2000
     - 3000
     - 4000
