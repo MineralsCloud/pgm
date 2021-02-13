@@ -43,8 +43,8 @@ class PgmRunner(CommandHandler):
         print("Calculating free energies")
         total_free_energies, vib_entropies, volumes, desired_pressure, continuous_temperature = calc.calculate()
         # print(desired_pressure)
-        print(total_free_energies)
-        print( vib_entropies)
+        # print(total_free_energies)
+        # print( vib_entropies)
         print("Calculating thermodynamics properties")
         thermo = ThermodynamicProperties(volumes, continuous_temperature, gpa_to_ry_b3(desired_pressure),
                                          total_free_energies)

@@ -221,7 +221,7 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
 
             return K * (hw_2kt / np.tanh(hw_2kt) - np.log(2 * np.sinh(hw_2kt))) * c
 
-        
+        # print(x,y)
         popt, _ = curve_fit(func, x, y)
         return func(xnew, *popt)
 
@@ -260,6 +260,7 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
     interpolated_volumes = np.tile(raw_volumes[index], (len(continuous_temperatures), 1))
     calibrated_quantities = calibrate_energy_on_reference(raw_volumes, raw_entropy, order=4, calibrate_index=index).T
     interpolated_quantities = []
+    # print(raw_volumes, np.shape(raw_volumes), raw_entropy, np.shape(raw_entropy))
     for i in range(volume_number):
         """
         Here decide which interpolation method to use
@@ -297,11 +298,9 @@ def spline_interpolation(raw_volumes, raw_quantities, discrete_temperatures, con
     calibrated_quantities = calibrate_energy_on_reference(raw_volumes, raw_quantities, order=4, calibrate_index=index).T
     interpolated_quantities = []
     for i in range(volume_number):
-        interpolated_quantities.append(
-
-            InterpolatedUnivariateSpline(
-                discrete_temperatures, calibrated_quantities[i])(continuous_temperatures)
-        )
+        # _,e = polynomial_least_square_fitting(discrete_temperatures,calibrated_quantities[i],continuous_temperatures,order=3)
+        e = UnivariateSpline(discrete_temperatures, calibrated_quantities[i])(continuous_temperatures)
+        interpolated_quantities.append(e)
     # InterpolatedUnivariateSpline < > UnivariateSpline
 
     interpolated_quantities = np.array(interpolated_quantities).T
