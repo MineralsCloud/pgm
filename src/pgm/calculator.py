@@ -59,13 +59,12 @@ class FreeEnergyCalculation:
 
         volumes, energies, static_energies = qha(self.NV, self.ratio, calc_input)
 
-        energies[0] = np.zeros(len(energies[0]))
 
         # interpolation between configurations(temperatures)
         static_free_energies, interpolated_volumes = spline_interpolation(volumes, static_energies,
                                                                           self.discrete_temperatures,
                                                                           self.continuous_temperature)
-        zp_free_energies, _ = spline_interpolation(volumes, static_energies,
+        zp_free_energies, _ = spline_interpolation(volumes, zp_energies,
                                                                           self.discrete_temperatures,
                                                                           self.continuous_temperature)
         total_free_energies = vib_energies + static_free_energies 
@@ -126,7 +125,7 @@ def pgm(NTV, ratio, continuous_temperatures, input: Input = None):
 
 def zp(NTV, ratio, input: Input):
     """
-    Computes qha energy
+    Computes zero point energy
     return:
     all_volumes: interpolated volumes at different discrete temperatures
     all_energies: interpolated qha energies at different discrete temperatures
@@ -352,7 +351,6 @@ def spline_interpolation(raw_volumes, raw_quantities, discrete_temperatures, con
     calibrated_quantities = calibrate_energy_on_reference(raw_volumes, raw_quantities, order=4, calibrate_index=index).T
     interpolated_quantities = []
     for i in range(volume_number):
-        # _,e = polynomial_least_square_fitting(discrete_temperatures,calibrated_quantities[i],continuous_temperatures,order=3)
         e = UnivariateSpline(discrete_temperatures, calibrated_quantities[i])(continuous_temperatures)
         interpolated_quantities.append(e)
     # InterpolatedUnivariateSpline < > UnivariateSpline
