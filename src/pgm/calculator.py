@@ -7,20 +7,13 @@ Core module for energy calculation in pgm
 """
 
 from pgm.reader.read_input import Input
-from pgm.util.fitting import polynomial_least_square_fitting
-from pgm.util.grid_interpolation import calculate_eulerian_strain, from_eulerian_strain
 import numpy as np
 from scipy.constants import physical_constants as pc
-from typing import Callable, Optional
-from scipy.interpolate import UnivariateSpline, InterpolatedUnivariateSpline
 from scipy.integrate import cumtrapz
 from scipy.optimize import curve_fit
 from .settings import Settings
-import numba
+from .interpolate import Interpolation, spline_interpolation, calibrate_energy_on_reference
 from numba import jit
-
-# from sympy import symbols,tanh,sinh,log
-# from sympy.solvers import solve
 
 HBAR = 100 / pc['electron volt-inverse meter relationship'][0] / pc['Rydberg constant times hc in eV'][0]
 K = pc['Boltzmann constant in eV/K'][0] / pc['Rydberg constant times hc in eV'][0]
@@ -40,39 +33,30 @@ class FreeEnergyCalculation:
         self.continuous_temperature = setting.continuous_temperature
         self.pressures = setting.desired_pressure
 
-    # def __init__(self, NV, NT, initP, finalP, ratio, discrete_temperatures, folder):
-    #     self.NV = NV
-    #     self.NT = NT
-    #     self.ratio = ratio
-    #     self.folder = folder
-    #     self.discrete_temperatures = discrete_temperatures
-    #     self.continuous_temperature = np.linspace(discrete_temperatures[0], discrete_temperatures[-1], NT)
-    #     self.pressures = np.linspace(initP, finalP, NV)
-
     def calculate(self):
         calc_input = Input(self.folder, self.discrete_temperatures)
 
         # calculate vibrational free energies using pgm
+        # note here the vibrational energies and entropies are already interpolated between configurations
         vib_energies, vib_entropies = pgm(self.NV, self.ratio, self.continuous_temperature, calc_input)
 
         volumes, zp_energies, static_energies = zp_and_static(self.NV, self.ratio, calc_input)
 
-        # volumes, energies, static_energies = static_energy(self.NV, self.ratio, calc_input)
-
-        # interpolation between configurations(temperatures)
+        # interpolate static energy between configurations
         static_free_energies, interpolated_volumes = spline_interpolation(volumes, static_energies,
                                                                           self.discrete_temperatures,
                                                                           self.continuous_temperature)
-        zp_free_energies, _ = spline_interpolation(volumes, zp_energies,
-                                                   self.discrete_temperatures,
-                                                   self.continuous_temperature)
+
         total_free_energies = vib_energies + static_free_energies
 
-        # if the first temperature isn't 0, the free energy needs to minus a base energy
+        # if the first temperature isn't 0, the free energy needs to minus a base energy S_0T
         if 0 not in self.discrete_temperatures:
             s0T = np.min(self.discrete_temperatures) * np.array(vib_entropies[0, :])
             total_free_energies -= np.array([list(s0T)] * self.NT)
         else:
+            zp_free_energies, _ = spline_interpolation(volumes, zp_energies,
+                                                       self.discrete_temperatures,
+                                                       self.continuous_temperature)
             total_free_energies += + zp_free_energies
 
         volumes = interpolated_volumes[0]
@@ -83,10 +67,14 @@ class FreeEnergyCalculation:
 def pgm(NTV, ratio, continuous_temperatures, input: Input = None):
     """
     phonon gas model
-    compute free energies by intergrating entropies
+    compute free energies by integrating entropies
+    NTV: number of volumes
+    ratio: volume expansion ratio
+    continuous_temperatures: a series of continuous temperatures
+    input: Input class, i.e. bundle of all input files
     return:
-    vib_free_energies: a continous grid of vibrational free energies
-    interpolated_entropies: a continous grid of entropies
+    vib_free_energies: a continuous grid of vibrational free energies
+    interpolated_entropies: a continuous grid of entropies
     """
     all_volumes = []
     all_entropies = []
@@ -101,23 +89,19 @@ def pgm(NTV, ratio, continuous_temperatures, input: Input = None):
             s = entropy(temp, input_dict[temp][3], input_dict[temp][4])
             new_s = inter.fitting(s)
 
-        # s = entropy(temp, rs[3], rs[4])
-        # new_s = inter.fitting(s)
-
         all_volumes.append(inter.out_volumes)
         all_entropies.append(new_s)
     all_volumes = np.array(all_volumes)
     all_entropies = np.array(all_entropies)
+
     """
-    Start from here there are 2 options:
-    If the input comes with configuration starts from 0K, we can use spline interpolation
-    Otherwise, if the starting temperature is somewhat higher than 0K, we need to fit the entropy
+    Interpolate entropies between configurations
     """
     interpolated_entropies, interpolated_volumes = fit_entropy(all_volumes, all_entropies,
                                                                discrete_temperatures, continuous_temperatures,
                                                                )
 
-    vib_free_energies = intergrate(continuous_temperatures, interpolated_entropies)
+    vib_free_energies = integrate(continuous_temperatures, interpolated_entropies)
 
     return vib_free_energies, interpolated_entropies
 
@@ -125,9 +109,12 @@ def pgm(NTV, ratio, continuous_temperatures, input: Input = None):
 def zp_and_static(NTV, ratio, input: Input):
     """
     Computes zero point energy
+    NTV: number of volumes
+    ratio: volume expansion ratio
+    input: Input class, i.e. bundle of all input files
     return:
     all_volumes: interpolated volumes at different discrete temperatures
-    all_zp_energies: interpolated qha energies at different discrete temperatures
+    all_zp_energies: interpolated zp energies at different discrete temperatures
     all_static_energies: interpolated static energies at different discrete temperatures
     """
 
@@ -161,7 +148,7 @@ def zp_and_static(NTV, ratio, input: Input):
 
     for temp in input_dict.keys():
         vib_f = zp_energy(temp, input_dict[temp][3], input_dict[temp][
-            4])  # compute vibrational free energies using qha formula, only vibrational!
+            4])  # compute zero point energies
 
         # input_dict[temp][1] is the volumes from a single qha input file
         # inter is used to calculate the strain based on the volume
@@ -213,7 +200,6 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
 
             return K * (hw_2kt / np.tanh(hw_2kt) - np.log(2 * np.sinh(hw_2kt))) * c
 
-        # print(x,y)
         popt, _ = curve_fit(func, x, y)
         return func(xnew, *popt)
 
@@ -230,7 +216,6 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
     interpolated_volumes = np.tile(raw_volumes[index], (len(continuous_temperatures), 1))
     calibrated_quantities = calibrate_energy_on_reference(raw_volumes, raw_entropy, order=4, calibrate_index=index).T
     interpolated_quantities = []
-    # print(raw_volumes, np.shape(raw_volumes), raw_entropy, np.shape(raw_entropy))
     for i in range(volume_number):
         """
         Here decide which interpolation method to use
@@ -253,80 +238,10 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
     return interpolated_quantities, interpolated_volumes
 
 
-def spline_interpolation(raw_volumes, raw_quantities, discrete_temperatures, continuous_temperatures
-                         ):
-    """
-    interpolate between configurations
-    raw_volumes: a volume dataframe with the size of (# of configurations, # of volumes)
-    raw_quantity: a quantity(eg. entropy/energy) dataframe with the size of (# of configurations, # of quantity)
-    discrete_temperatures: a array of the temperatures for all the configurations
-    continuous_temperatures: target temperatures array
-    """
-    configurations_amount, volume_number = raw_volumes.shape
-    index = 0
-    interpolated_volumes = np.tile(raw_volumes[index], (len(continuous_temperatures), 1))
-    calibrated_quantities = calibrate_energy_on_reference(raw_volumes, raw_quantities, order=4, calibrate_index=index).T
-    interpolated_quantities = []
-    for i in range(volume_number):
-        e = UnivariateSpline(discrete_temperatures, calibrated_quantities[i])(continuous_temperatures)
-        interpolated_quantities.append(e)
-    # InterpolatedUnivariateSpline < > UnivariateSpline
-
-    interpolated_quantities = np.array(interpolated_quantities).T
-
-    return interpolated_quantities, interpolated_volumes
-
-
-def calibrate_energy_on_reference(volumes_before_calibration, energies_before_calibration,
-                                  order: Optional[int] = 3, calibrate_index=0):
-    """
-    In multi-configuration system calculation, volume set of each calculation may varies a little,
-    This function would make the volume set  of configuration 1 (normally, the most populated configuration)
-    as a reference volume set, then calibrate the energies of all configurations to this reference volume set.
-
-    :param volumes_before_calibration: Original volume sets of all configurations
-    :param energies_before_calibration: Free energies of all configurations on the corresponding volume sets.
-    :param order: The order of Birch--Murnaghan EOS fitting.
-    :param calibrate_option: The option to control the calibrate reference
-    :return: Free energies of each configuration on referenced volumes (usually the volumes of the first configuration).
-    """
-    configurations_amount, _ = volumes_before_calibration.shape
-    volumes_for_reference = volumes_before_calibration[calibrate_index]
-    energies_after_calibration = np.empty(volumes_before_calibration.shape)
-    for i in range(configurations_amount):
-        strains_before_calibration = calculate_eulerian_strain(volumes_before_calibration[i, calibrate_index],
-                                                               volumes_before_calibration[i])
-        strains_after_calibration = calculate_eulerian_strain(volumes_before_calibration[i, calibrate_index],
-                                                              volumes_for_reference)
-        _, energies_after_calibration[i, :] = polynomial_least_square_fitting(strains_before_calibration,
-                                                                              energies_before_calibration[i],
-                                                                              strains_after_calibration,
-                                                                              order=order)
-    return energies_after_calibration
-
-
 def entropy(temperature, frequency, weights):
     """
     Equation for calculate entropy from frequencies
     """
-
-    # def vib_entropy(temperature, frequency):
-    #     kt = K * temperature
-    #     mat = np.zeros(frequency.shape)
-    #     for i in range(frequency.shape[0]):
-    #         for j in range(frequency.shape[1]):
-    #             for k in range(frequency.shape[2]):
-    #                 if frequency[i][j][k] <= 0:
-    #                     mat[i][j][k] = 0
-    #                 else:
-    #                     freq = frequency[i][j][k]
-    #                     hw = HBAR * freq
-    #                     hw_2kt = hw / (2 * kt)
-    #                     mat[i][j][k] = K * (hw_2kt / np.tanh(hw_2kt) - np.log(2 * np.sinh(hw_2kt)))
-    #     return mat
-    #
-    # scaled_q_weights = weights / np.sum(weights)
-    # vibrational_entropies = np.dot(vib_entropy(temperature, frequency).sum(axis=2), scaled_q_weights)
 
     @jit(nopython=True, parallel=True)
     def vib_entropy(temperature, frequency):
@@ -349,47 +264,13 @@ def entropy(temperature, frequency, weights):
     return vibrational_entropies
 
 
-def intergrate(temperatures, entropies):
+def integrate(temperatures, entropies):
     all_energies = []
     for i, entropy in enumerate(entropies.T):  # for same temperature
         energy = cumtrapz(entropy, temperatures, initial=entropy[0])
         all_energies.append(energy)
 
     return - np.array(all_energies).T
-
-
-class Interpolation:
-    """
-    Interpolating a quantity based on the volume grid
-    """
-
-    def __init__(self, in_volumes, num, ratio):
-        """
-        in_volumes: the volume list
-        """
-        self.in_volumes = np.array(in_volumes)
-        self.num = num
-        self.ratio = ratio
-        self.out_volumes, self.out_strains, self.in_strains = self.interpolate_volumes
-
-    @property
-    def interpolate_volumes(self):
-        """
-        for a vector of volumes, interpolate num, expand the volume by ratio
-        """
-        in_strains = calculate_eulerian_strain(self.in_volumes[0], self.in_volumes)
-        v_min, v_max = np.min(self.in_volumes), np.max(self.in_volumes)
-        # r = v_upper / v_max = v_min / v_lower
-        v_lower, v_upper = v_min / self.ratio, v_max * self.ratio
-        # The *v_max* is a reference value here.
-        s_upper, s_lower = calculate_eulerian_strain(v_max, v_lower), calculate_eulerian_strain(v_max, v_upper)
-        out_strains = np.linspace(s_lower, s_upper, self.num)
-        out_volumes = from_eulerian_strain(v_max, out_strains)
-        return out_volumes, out_strains, in_strains
-
-    def fitting(self, quantity, order=3):
-        _, fitted_quantity = polynomial_least_square_fitting(self.in_strains, quantity, self.out_strains, order)
-        return fitted_quantity
 
 
 if __name__ == '__main__':
