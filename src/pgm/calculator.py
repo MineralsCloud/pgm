@@ -273,5 +273,9 @@ def integrate(temperatures, entropies):
     return - np.array(all_energies).T
 
 
+def interpolate_frequencies():
+    NotImplemented
+
+
 if __name__ == '__main__':
     pass

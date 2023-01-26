@@ -4,10 +4,10 @@ import re
 from typing import Iterator, Union, Tuple
 
 import numpy as np
+import numpy
 from scientific_string import strings_to_integers
 from text_stream import TextStream
 from pgm.util.tools import is_monotonic_decreasing
-
 
 # ===================== What can be exported? =====================
 __all__ = ['Input', 'read_input']
@@ -16,17 +16,43 @@ __all__ = ['Input', 'read_input']
 class Input:
     """
     A class of pgm input
+    The input is stored as a dictionary where dict[temp][0,1,2,3] are
+        - the number of formula unit in a unit cell,
+        - the number of volumes in *inp*,
+        - the static energies of each volume,
+        - a 3D array, i.e., the frequencies of each volume of each q-point of each mode, and
+        - a vector of weights of each q-point, respectively.
+    TODO: this is a very bad style, when invoke the input you need to write something like
+    input_dict[temp][3], which is very confusing.
     """
+
     def __init__(self, path_to_dir, discrete_temperature):
-        #TODO:add path checker
+        # TODO:add path checker
         self.input_path = [path_to_dir % str(x) for x in discrete_temperature]
         self.__temperatures = discrete_temperature
         rs = {}
+        number_of_formula_unit = []
+        number_of_volumes = []
+        static_energy = []
+        frequencies = []
+        weights = []
         for temp in discrete_temperature:
             path = path_to_dir % str(temp)
             rs[temp] = read_input(path)
+            number_of_formula_unit.append(rs[temp][0])
+            number_of_volumes.append(rs[temp][1])
+            static_energy.append(rs[temp][2])
+            frequencies.append(rs[temp][3])
+            weights.append(rs[temp][4])
 
-        self.__rs = rs
+        self.__rs = rs  # leave it for now
+        # To corporate with the read_input function without changing it
+        self.number_of_formula_unit = numpy.array(number_of_formula_unit)
+        self.number_of_volumes = numpy.array(number_of_volumes)
+        self.static_energy = numpy.array(static_energy)
+        # A 4D array with shape of (# of temp, # of volumes, # of q points, # of modes)
+        self.frequencies = numpy.array(frequencies)
+        self.weights = numpy.array(weights)
 
     def get_input(self):
         return self.__rs
