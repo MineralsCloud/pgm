@@ -59,15 +59,14 @@ class FreeEnergyCalculation:
 
         volumes, energies, static_energies = qha(self.NV, self.ratio, calc_input)
 
-
         # interpolation between configurations(temperatures)
         static_free_energies, interpolated_volumes = spline_interpolation(volumes, static_energies,
                                                                           self.discrete_temperatures,
                                                                           self.continuous_temperature)
         zp_free_energies, _ = spline_interpolation(volumes, zp_energies,
-                                                                          self.discrete_temperatures,
-                                                                          self.continuous_temperature)
-        total_free_energies = vib_energies + static_free_energies 
+                                                   self.discrete_temperatures,
+                                                   self.continuous_temperature)
+        total_free_energies = vib_energies + static_free_energies
 
         # if the first temperature isn't 0, the free energy needs to minus a base energy
         if 0 not in self.discrete_temperatures:
@@ -459,6 +458,10 @@ def intergrate(temperatures, entropies):
         all_energies.append(energy)
 
     return - np.array(all_energies).T
+
+
+def interpolate_frequencies():
+    NotImplemented
 
 
 class Interpolation:
