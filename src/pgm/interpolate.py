@@ -20,7 +20,7 @@ class Interpolation:
 
     def __init__(self, in_volumes, num, ratio):
         """
-        in_volumes: the volume list
+        in_volumes: the discrete volume list
         """
         self.in_volumes = np.array(in_volumes)
         self.num = num
@@ -43,6 +43,9 @@ class Interpolation:
         return out_volumes, out_strains, in_strains
 
     def fitting(self, quantity, order=3):
+        """
+        quantity: the discrete quantity to be fitted
+        """
         _, fitted_quantity = polynomial_least_square_fitting(self.in_strains, quantity, self.out_strains, order)
         return fitted_quantity
 
