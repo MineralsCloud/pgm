@@ -51,8 +51,8 @@ def eval_polynomial(P, x):
 
 def brute_force(input: Input):
     start = time.time()
-    interpolated_freq = numpy.zeros((250, 5, 8000, 15))
-    interpolated_temp = numpy.linspace(1500, 4000, 250)
+    interpolated_freq = numpy.zeros((251, 5, 8000, 15))
+    interpolated_temp = numpy.linspace(1500, 4000, 251)
     temp = numpy.array([1500, 2000, 2500, 3000, 3500, 4000])
     for i in range(5):
         for j in range(8000):
@@ -69,8 +69,8 @@ def brute_force(input: Input):
 
 def brute_force_numba(input: Input):
     start = time.time()
-    interpolated_freq = numpy.zeros((250, 5, 8000, 15))
-    interpolated_temp = numpy.linspace(1500, 4000, 250)
+    interpolated_freq = numpy.zeros((251, 5, 8000, 15))
+    interpolated_temp = numpy.linspace(1500, 4000, 251)
     temp = numpy.array([1500, 2000, 2500, 3000, 3500, 4000])
     for i in range(5):
         for j in range(8000):
@@ -88,8 +88,8 @@ def brute_force_numba(input: Input):
 def brute_force_jax():
     NotImplemented
     start = time.time()
-    interpolated_freq = numpy.zeros((250, 5, 8000, 15))
-    interpolated_temp = jnp.linspace(1500, 4000, 250)
+    interpolated_freq = numpy.zeros((251, 5, 8000, 15))
+    interpolated_temp = jnp.linspace(1500, 4000, 251)
     temp = jnp.array([1500, 2000, 2500, 3000, 3500, 4000], dtype=float)
     for i in range(5):
         for j in range(8000):
@@ -109,7 +109,7 @@ def numba_numpy():
     start = time.time()
     # interpolated_freq = numpy.empty((250, 5, 8000, 15))
     interpolated_freq = []
-    interpolated_temp = numpy.linspace(1500, 4000, 250)
+    interpolated_temp = numpy.linspace(1500, 4000, 251)
     temp = numpy.array([1500, 2000, 2500, 3000, 3500, 4000])
     freq = input.frequencies
 
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     freq = brute_force_numba(input)
 
     # plot random freq interpolation results
-    interpolated_temp = numpy.linspace(1500, 4000, 250)
+    interpolated_temp = numpy.linspace(1500, 4000, 251)
     for t in range(10):
         i, j, k = numpy.random.randint([0, 0, 0], [5, 8000, 15])
         plt.plot(interpolated_temp, freq[:, i, j, k])
