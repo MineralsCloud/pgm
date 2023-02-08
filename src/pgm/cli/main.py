@@ -18,7 +18,7 @@ def run(file_settings: str):
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
 
-    print("Caution: If negative frequencies found, they are currently treated as 0!")
+    print("Caution: If imaginary frequencies found, they are currently treated as 0!")
     calc = FreeEnergyCalculation(user_settings)
     print("Calculating free energies")
     total_free_energies, vib_entropies, volumes, desired_pressure, continuous_temperature = calc.calculate()
