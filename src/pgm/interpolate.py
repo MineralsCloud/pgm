@@ -6,9 +6,14 @@ All interpolation related module in pgm
 """
 
 from typing import Callable, Optional
+
+import numpy
 from scipy.interpolate import UnivariateSpline, InterpolatedUnivariateSpline
 from pgm.util.fitting import polynomial_least_square_fitting
 from pgm.util.grid_interpolation import calculate_eulerian_strain, from_eulerian_strain
+from numba import njit, prange, jit
+from pgm.reader.read_input import Input
+import time
 
 import numpy as np
 
@@ -100,3 +105,93 @@ def calibrate_energy_on_reference(volumes_before_calibration, energies_before_ca
                                                                               strains_after_calibration,
                                                                               order=order)
     return energies_after_calibration
+
+
+@jit(nopython=True)
+def _coeff_mat(x, deg):
+    mat_ = np.zeros(shape=(x.shape[0], deg + 1))
+    const = np.ones_like(x)
+    mat_[:, 0] = const
+    mat_[:, 1] = x
+    if deg > 1:
+        for n in range(2, deg + 1):
+            mat_[:, n] = x ** n
+    return mat_
+
+
+@jit(nopython=True)
+def _fit_x(a, b):
+    # linalg solves ax = b
+    det_ = np.linalg.lstsq(a, b)[0]
+    return det_
+
+
+@jit(nopython=True)
+def fit_poly(x, y, deg):
+    a = _coeff_mat(x, deg)
+    p = _fit_x(a, y)
+    # Reverse order so p[0] is coefficient of highest order
+    return p[::-1]
+
+
+@jit(nopython=True)
+def eval_polynomial(P, x):
+    '''
+    Compute polynomial P(x) where P is a vector of coefficients, highest
+    order coefficient at P[0].  Uses Horner's Method.
+    '''
+    result = np.zeros_like(x)
+    for coeff in P:
+        result = x * result + coeff
+    return result
+
+
+class FrequencyInterpolation:
+    """
+    Interpolate the frequencies against the temperatures
+    """
+
+    def __init__(self, input: Input):
+        self.freq = input.frequencies
+        self.raw_shape = self.freq.shape
+        self.discrete_temp = numpy.array(input.get_temperature())
+
+    def numpy_polyfit(self, temperature: numpy.ndarray, DEBUG: bool = False):
+        start = time.time()
+        nt = len(temperature)
+        nv = self.raw_shape[1]  # number of volumes
+        nq = self.raw_shape[2]  # number of q points
+        nm = self.raw_shape[3]  # number of modes
+        interpolated_freq = numpy.empty((nt, nv, nq, nm))
+        for i in range(nv):
+            for j in range(nq):
+                for k in range(nm):
+                    x = self.discrete_temp
+                    y = self.freq[:, i, j, k]
+                    z = numpy.polyfit(x, y, 2)  # quadratic form
+                    interpolated_freq[:, i, j, k] = numpy.polyval(z, temperature)
+        end = time.time()
+        if DEBUG == True:
+            print("runtime is", (end - start), "s")
+            print(interpolated_freq.size * interpolated_freq.itemsize, "bytes")
+        return interpolated_freq
+
+    def numba_polyfit(self, temperature: numpy.ndarray, DEBUG: bool = False):
+        start = time.time()
+        nt = len(temperature)
+        nv = self.raw_shape[1]  # number of volumes
+        nq = self.raw_shape[2]  # number of q points
+        nm = self.raw_shape[3]  # number of modes
+        interpolated_freq = numpy.empty((nt, nv, nq, nm))
+        for i in range(nv):
+            for j in range(nq):
+                for k in range(nm):
+                    x = numpy.array(self.discrete_temp, copy=True)
+                    y = numpy.array(self.freq[:, i, j, k], copy=True)
+                    p_coeffs = fit_poly(x, y, 2)  # quadratic form
+                    interpolated_freq[:, i, j, k] = eval_polynomial(p_coeffs, temperature)
+        end = time.time()
+        if DEBUG == True:
+            print("runtime is", (end - start), "s")
+            print(interpolated_freq.size * interpolated_freq.itemsize, "bytes")
+        return interpolated_freq

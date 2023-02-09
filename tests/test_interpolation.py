@@ -6,6 +6,7 @@ import time
 import matplotlib.pyplot as plt
 from pgm.reader.read_input import Input
 from numba import njit, prange, jit
+from pgm.interpolate import FrequencyInterpolation
 
 matplotlib.use('Agg')
 
@@ -140,15 +141,12 @@ def numba_numpy():
 if __name__ == "__main__":
     dir = "./examples/casio3/%sK.txt"
     temp = [1500, 2000, 2500, 3000, 3500, 4000]
-    input = Input(dir, temp)
-    # rs = input.get_input()
-    # print(rs[2000][3])
-    print(input.frequencies.size * input.frequencies.itemsize, "bytes")
-    # freq = brute_force(input)
-    freq = brute_force_numba(input)
-
-    # plot random freq interpolation results
     interpolated_temp = numpy.linspace(1500, 4000, 251)
+    input = Input(dir, temp)
+    print(input.frequencies.size * input.frequencies.itemsize, "bytes")
+    inter = FrequencyInterpolation(input)
+    freq = inter.numba_polyfit(interpolated_temp, DEBUG=True)
+    # plot 10 random freq interpolation results
     for t in range(10):
         i, j, k = numpy.random.randint([0, 0, 0], [5, 8000, 15])
         plt.plot(interpolated_temp, freq[:, i, j, k])
