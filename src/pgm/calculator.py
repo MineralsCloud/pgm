@@ -12,7 +12,7 @@ from scipy.constants import physical_constants as pc
 from scipy.integrate import cumtrapz
 from scipy.optimize import curve_fit
 from .settings import Settings
-from .interpolate import Interpolation, spline_interpolation, calibrate_energy_on_reference
+from .interpolate import Interpolation, spline_interpolation, calibrate_energy_on_reference, FrequencyInterpolation
 from numba import jit
 
 HBAR = 100 / pc['electron volt-inverse meter relationship'][0] / pc['Rydberg constant times hc in eV'][0]
@@ -32,6 +32,7 @@ class FreeEnergyCalculation:
         self.discrete_temperatures = setting.temperature
         self.continuous_temperature = setting.continuous_temperature
         self.pressures = setting.desired_pressure
+        self.input = Input(self.folder, self.discrete_temperatures)
 
     def calculate(self):
         calc_input = Input(self.folder, self.discrete_temperatures)
@@ -62,6 +63,55 @@ class FreeEnergyCalculation:
         volumes = interpolated_volumes[0]
 
         return total_free_energies, vib_entropies, volumes, self.pressures, self.continuous_temperature
+
+    def interpolate_frequencies(self):
+        """
+        interpolate the frequencies
+        """
+        freq = FrequencyInterpolation(self.input).numba_polyfit(self.continuous_temperature)
+        return freq
+
+    def calculate_vibrational(self):
+        """
+        calculate vibrational properties, i.e. vibrational entropy and free energy
+        depends on "interpolate_frequencies"
+        """
+        number_of_raw_volume = len(self.input.volumes)
+        s_vib = np.empty((self.NT, number_of_raw_volume))
+        freq = self.interpolate_frequencies()
+        weight = self.input.weights[0]  # here of course ensure that all weights are the same
+        for i in range(len(self.continuous_temperature)):
+            s_vib[i] = entropy(self.continuous_temperature[i], freq[i], weight)
+        f_vib = integrate(self.continuous_temperature, s_vib)
+        return s_vib, f_vib
+
+    def interpolate_F_total(self):
+        """
+        interpolate the F_total on a finer volume grid
+        depends on "calculate_vibrational"
+        """
+        # if the first temperature isn't 0, the free energy needs to minus a base energy S_0T
+        s_vib, f_vib = self.calculate_vibrational()
+        raw_E = self.input.static_energy  # E(V) from input
+        raw_V = self.input.volumes  # V
+        inter = Interpolation(raw_V, num=self.NV, ratio=self.ratio)
+        F_total_fitted = np.empty((self.NT, self.NV))
+        if 0 not in self.discrete_temperatures:
+            T_0 = self.discrete_temperatures[0]
+            F_total = f_vib + raw_E - T_0 * s_vib[0]
+        else:
+            raise NotImplementedError
+        for i in range(len(self.continuous_temperature)):
+            F_total_fitted[i] = inter.fitting(F_total[i])
+        return F_total_fitted
+
+    def calculate_volumes(self):
+        """
+        Interpolate volumes on a finer volume grid
+        """
+        raw_V = self.input.volumes  # V
+        inter = Interpolation(raw_V, num=self.NV, ratio=self.ratio)
+        return inter.out_volumes
 
 
 def pgm(NTV, ratio, continuous_temperatures, input: Input = None):

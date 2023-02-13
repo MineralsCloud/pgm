@@ -8,7 +8,7 @@ from numba import jit
 from scipy.constants import physical_constants as pc
 from scipy.integrate import cumtrapz
 from pgm.calculator import entropy, integrate
-from pgm.interpolate import Interpolation
+from pgm.interpolate import Interpolation, FrequencyInterpolation
 from pgm.util.unit_conversion import ry_to_ev, b3_to_a3
 import pandas
 
@@ -22,7 +22,9 @@ if __name__ == "__main__":
     input = Input(dir, temp)
     weight = input.weights[0]  # here of course ensure that all weights are the same
     s_vib = numpy.empty((251, 5))  # S(T,V)
-    freq = brute_force_numba(input)  # runtime is 4.795620918273926 s
+    # freq = brute_force_numba(input)  # runtime is 4.795620918273926 s
+    inter = FrequencyInterpolation(input)
+    freq = inter.numba_polyfit(interpolated_temp, DEBUG=True)
     start = time.time()
     # Very slow here
     for i in range(len(interpolated_temp)):
@@ -37,7 +39,7 @@ if __name__ == "__main__":
     print("time for calculate f_vib is", end - start, "s")
     # time for calculate f_vib is 0.00027251243591308594 s
     raw_E = input.static_energy[0]  # E(V) from input
-    raw_V = input.number_of_volumes[0]  # V
+    raw_V = input.volumes  # V
     inter = Interpolation(raw_V, num=151, ratio=1.2)
     # E = inter.fitting(raw_E)
     F_total = f_vib + raw_E - 1500 * s_vib[0]
@@ -50,8 +52,8 @@ if __name__ == "__main__":
     # time for interpolate F total along volume is 0.007174015045166016 s
     print(F_total_fitted)
 
-    # plot final F(T,V) results against previous method
-    df = pandas.read_table("./examples/casio3/results/ftv_ev_a3", sep=',', header=0, index_col=0)
+    # plot final F(T,V) results_old against previous method
+    df = pandas.read_table("./examples/casio3/results_old/ftv_ev_a3", sep=',', header=0, index_col=0)
     df_v = numpy.array(df.columns.values, dtype=float)
     v = inter.fitting(raw_V)
     # print(df_v - b3_to_a3(v))

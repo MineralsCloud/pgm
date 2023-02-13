@@ -18,7 +18,7 @@ class Input:
     A class of pgm input
     The input is stored as a dictionary where dict[temp][0,1,2,3] are
         - the number of formula unit in a unit cell,
-        - the number of volumes in *inp*,
+        - discrete volumes in *inp*,
         - the static energies of each volume,
         - a 3D array, i.e., the frequencies of each volume of each q-point of each mode, and
         - a vector of weights of each q-point, respectively.
@@ -32,7 +32,7 @@ class Input:
         self.__temperatures = discrete_temperature
         rs = {}
         number_of_formula_unit = []
-        number_of_volumes = []
+        all_volumes = []
         static_energy = []
         frequencies = []
         weights = []
@@ -40,7 +40,7 @@ class Input:
             path = path_to_dir % str(temp)
             rs[temp] = read_input(path)
             number_of_formula_unit.append(rs[temp][0])
-            number_of_volumes.append(rs[temp][1])
+            all_volumes.append(rs[temp][1])
             static_energy.append(rs[temp][2])
             frequencies.append(rs[temp][3])
             weights.append(rs[temp][4])
@@ -48,8 +48,8 @@ class Input:
         self.__rs = rs  # leave it for now
         # To corporate with the read_input function without changing it
         self.number_of_formula_unit = numpy.array(number_of_formula_unit)
-        self.number_of_volumes = numpy.array(number_of_volumes)
-        self.static_energy = numpy.array(static_energy)
+        self.volumes = numpy.array(all_volumes[0])
+        self.static_energy = numpy.array(static_energy[0])
         # A 4D array with shape of (# of temp, # of volumes, # of q points, # of modes)
         self.frequencies = numpy.array(frequencies)
         self.weights = numpy.array(weights)
