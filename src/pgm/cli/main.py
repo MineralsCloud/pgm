@@ -55,27 +55,27 @@ def run(file_settings: str):
 
     if (user_settings.alpha_tp):
         alpha_tp = thermo.alpha_tp
-        save_data(alpha_tp, continuous_temperature, desired_pressure, out_dir + 'alpha_K_gpa')
+        save_data(alpha_tp, continuous_temperature, desired_pressure, out_dir + 'alpha_tp_K_gpa')
 
     if (user_settings.bt_tp):
         bt_tp = ry_b3_to_gpa(thermo.bt_tp)
-        save_data(bt_tp, continuous_temperature, desired_pressure, out_dir + 'bt_gpa_K_gpa')
+        save_data(bt_tp, continuous_temperature, desired_pressure, out_dir + 'bt_tp_gpa_K_gpa')
 
     if (user_settings.gamma_tp):
         gamma_tp = thermo.gamma_tp
-        save_data(gamma_tp, continuous_temperature, desired_pressure, out_dir + 'gamma_K_gpa')
+        save_data(gamma_tp, continuous_temperature, desired_pressure, out_dir + 'gamma_tp_K_gpa')
 
     if (user_settings.bs_tp):
         bs_tp = ry_b3_to_gpa(thermo.bs_tp)
-        save_data(bs_tp, continuous_temperature, desired_pressure, out_dir + 'bs_gpa_K_gpa')
+        save_data(bs_tp, continuous_temperature, desired_pressure, out_dir + 'bs_tp_gpa_K_gpa')
 
     if (user_settings.cv_tp):
         cv = ry_to_j_mol(thermo.cv_tp)
-        save_data(cv, continuous_temperature, desired_pressure, out_dir + 'cv_jmol_K_gpa')
+        save_data(cv, continuous_temperature, desired_pressure, out_dir + 'cv_tp_jmol_K_gpa')
 
     if (user_settings.cp_tp):
         cp = ry_to_j_mol(thermo.cp_tp)
-        save_data(cp, continuous_temperature, desired_pressure, out_dir + 'cp_jmol_K_gpa')
+        save_data(cp, continuous_temperature, desired_pressure, out_dir + 'cp_tp_jmol_K_gpa')
     print("Saving thermodynamics properties")
 
 
