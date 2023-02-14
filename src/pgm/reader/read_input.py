@@ -111,6 +111,7 @@ def read_input(inp: Union[str, pathlib.PurePath]):
     # Generate containers for storing the following data.
     volumes = np.empty(volumes_amount, dtype=float)
     static_energies = np.empty(volumes_amount, dtype=float)
+    electronic_entropy = np.empty(volumes_amount, dtype=float)
     frequencies = np.empty((volumes_amount, q_points_amount, modes_per_q_point_amount), dtype=float)
     q_weights = np.empty(q_points_amount, dtype=float)
 
@@ -121,7 +122,9 @@ def read_input(inp: Union[str, pathlib.PurePath]):
     j = 0  # q-point index, note it is not count like `i`!
 
     # Now we start reading the energies, volumes, and frequencies.
-    regex1 = re.compile("P\s*=\s*-?\d*\.?\d*\s*V\s*=(\s*\d*\.?\d*)\s*E\s*=\s*(-?\d*\.?\d*)", re.IGNORECASE)
+    # Note here P is not captured, wtf guys?
+    regex1 = re.compile("P\s*=\s*-?\d*\.?\d*\s*V\s*=(\s*\d*\.?\d*)\s*E\s*=\s*(-?\d*\.?\d*)S_el\s*=\s*(-?\d*\.?\d*)",
+                        re.IGNORECASE)
 
     for line in gen:
         if not line.strip():
@@ -132,7 +135,7 @@ def read_input(inp: Union[str, pathlib.PurePath]):
             if match is None:
                 raise ValueError("Search of pattern {0} failed in line '{1}!".format(regex1.pattern, line))
             else:
-                volumes[i], static_energies[i] = match.groups()
+                volumes[i], static_energies[i], electronic_entropy[i] = match.groups()
                 i += 1
                 j = 0
             continue
@@ -165,4 +168,4 @@ def read_input(inp: Union[str, pathlib.PurePath]):
     if not is_monotonic_decreasing(volumes):
         raise ValueError('The volumes in the input file is not monotonicly decreasing, please check your input file')
 
-    return formula_unit_number, volumes, static_energies, frequencies, q_weights
+    return formula_unit_number, volumes, static_energies, frequencies, q_weights, electronic_entropy
