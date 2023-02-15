@@ -195,3 +195,30 @@ class FrequencyInterpolation:
             print("runtime is", (end - start), "s")
             print(interpolated_freq.size * interpolated_freq.itemsize, "bytes")
         return interpolated_freq
+
+
+class ElectronicEntropyInterpolation:
+    """
+    Interpolate the electronic entropy wrt temperature
+    """
+
+    def __init__(self, input: Input):
+        self.s_el = input.electronic_entropy
+        self.raw_shape = self.s_el.shape
+        self.discrete_temp = numpy.array(input.get_temperature())
+
+    def numba_polyfit(self, temperature: numpy.ndarray, DEBUG: bool = False):
+        start = time.time()
+        nt = len(temperature)
+        nv = self.raw_shape[1]  # number of volumes
+        interpolated_s_el = numpy.empty((nt, nv))
+        for i in range(nv):
+            x = numpy.array(self.discrete_temp, copy=True)
+            y = numpy.array(self.s_el[:, i], copy=True)
+            p_coeffs = fit_poly(x, y, 2)  # quadratic form
+            interpolated_s_el[:, i] = eval_polynomial(p_coeffs, temperature)
+        end = time.time()
+        if DEBUG == True:
+            print("runtime is", (end - start), "s")
+            print(interpolated_s_el.size * interpolated_s_el.itemsize, "bytes")
+        return interpolated_s_el

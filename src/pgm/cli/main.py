@@ -24,7 +24,6 @@ def run(file_settings: str):
     # total_free_energies, vib_entropies, volumes, desired_pressure, continuous_temperature = calc.calculate()
     total_free_energies = calc.interpolate_F_total()
     volumes = calc.calculate_volumes()
-    # vib_entropies, f_vib = calc.calculate_vibrational()
     continuous_temperature = calc.continuous_temperature
     desired_pressure = calc.pressures
     print("Calculating thermodynamics properties")

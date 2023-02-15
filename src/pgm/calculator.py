@@ -12,7 +12,8 @@ from scipy.constants import physical_constants as pc
 from scipy.integrate import cumtrapz
 from scipy.optimize import curve_fit
 from .settings import Settings
-from .interpolate import Interpolation, spline_interpolation, calibrate_energy_on_reference, FrequencyInterpolation
+from .interpolate import Interpolation, spline_interpolation, calibrate_energy_on_reference, FrequencyInterpolation, \
+    ElectronicEntropyInterpolation
 from numba import jit
 
 HBAR = 100 / pc['electron volt-inverse meter relationship'][0] / pc['Rydberg constant times hc in eV'][0]
@@ -71,7 +72,14 @@ class FreeEnergyCalculation:
         freq = FrequencyInterpolation(self.input).numba_polyfit(self.continuous_temperature)
         return freq
 
-    def calculate_vibrational(self):
+    def calculate_electronic_entropy(self):
+        """
+        interpolate the electronic_entropy
+        """
+        s_el = ElectronicEntropyInterpolation(self.input).numba_polyfit(self.continuous_temperature)
+        return s_el
+
+    def calculate_vibrational_entropy(self):
         """
         calculate vibrational properties, i.e. vibrational entropy and free energy
         depends on "interpolate_frequencies"
@@ -82,23 +90,35 @@ class FreeEnergyCalculation:
         weight = self.input.weights[0]  # here of course ensure that all weights are the same
         for i in range(len(self.continuous_temperature)):
             s_vib[i] = entropy(self.continuous_temperature[i], freq[i], weight)
-        f_vib = integrate(self.continuous_temperature, s_vib)
-        return s_vib, f_vib
+        return s_vib
+
+    def integrate_entropy(self):
+        """
+        Calculate the free energy on a finer temperature grid by integrating entropy
+        The entropy here is the summation of electronic entropy and vibrational entropy
+        depends on "calculate_vibrational_entropy" and "calculate_electronic_entropy"
+        """
+        s_vib = self.calculate_vibrational_entropy()
+        s_el = self.calculate_electronic_entropy()
+        assert (s_el.shape == s_vib.shape)
+        s_total = s_vib + s_el
+        f_total = integrate(self.continuous_temperature, s_total)
+        return f_total, s_total
 
     def interpolate_F_total(self):
         """
         interpolate the F_total on a finer volume grid
-        depends on "calculate_vibrational"
+        depends on "integrate_entropy"
         """
-        # if the first temperature isn't 0, the free energy needs to minus a base energy S_0T
-        s_vib, f_vib = self.calculate_vibrational()
+        f_total_raw, s_total_raw = self.integrate_entropy()
         raw_E = self.input.static_energy  # E(V) from input
         raw_V = self.input.volumes  # V
         inter = Interpolation(raw_V, num=self.NV, ratio=self.ratio)
         F_total_fitted = np.empty((self.NT, self.NV))
+        # if the first temperature isn't 0, the free energy needs to minus a base energy S_0T
         if 0 not in self.discrete_temperatures:
             T_0 = self.discrete_temperatures[0]
-            F_total = f_vib + raw_E - T_0 * s_vib[0]
+            F_total = f_total_raw + raw_E - T_0 * s_total_raw[0]
         else:
             raise NotImplementedError
         for i in range(len(self.continuous_temperature)):

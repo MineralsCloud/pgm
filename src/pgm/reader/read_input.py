@@ -36,6 +36,7 @@ class Input:
         static_energy = []
         frequencies = []
         weights = []
+        all_electronic_entropy = []
         for temp in discrete_temperature:
             path = path_to_dir % str(temp)
             rs[temp] = read_input(path)
@@ -44,6 +45,7 @@ class Input:
             static_energy.append(rs[temp][2])
             frequencies.append(rs[temp][3])
             weights.append(rs[temp][4])
+            all_electronic_entropy.append(rs[temp][5])
 
         self.__rs = rs  # leave it for now
         # To corporate with the read_input function without changing it
@@ -53,6 +55,7 @@ class Input:
         # A 4D array with shape of (# of temp, # of volumes, # of q points, # of modes)
         self.frequencies = numpy.array(frequencies)
         self.weights = numpy.array(weights)
+        self.electronic_entropy = numpy.array(all_electronic_entropy)
 
     def get_input(self):
         return self.__rs
@@ -123,7 +126,7 @@ def read_input(inp: Union[str, pathlib.PurePath]):
 
     # Now we start reading the energies, volumes, and frequencies.
     # Note here P is not captured, wtf guys?
-    regex1 = re.compile("P\s*=\s*-?\d*\.?\d*\s*V\s*=(\s*\d*\.?\d*)\s*E\s*=\s*(-?\d*\.?\d*)S_el\s*=\s*(-?\d*\.?\d*)",
+    regex1 = re.compile("P\s*=\s*-?\d*\.?\d*\s*V\s*=(\s*\d*\.?\d*)\s*E\s*=\s*(-?\d*\.?\d*)\s*S_el\s*=\s*(-?\d*\.?\d*)",
                         re.IGNORECASE)
 
     for line in gen:
