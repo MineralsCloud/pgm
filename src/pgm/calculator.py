@@ -92,6 +92,19 @@ class FreeEnergyCalculation:
             s_vib[i] = entropy(self.continuous_temperature[i], freq[i], weight)
         return s_vib
 
+    def calculate_zero_point_energy(self):
+        """
+        Calculate zero point energy
+        depends on "interpolate_frequencies"
+        """
+        number_of_raw_volume = len(self.input.volumes)
+        f_zp = np.empty((self.NT, number_of_raw_volume))
+        freq = self.interpolate_frequencies()
+        weight = self.input.weights[0]  # here of course ensure that all weights are the same
+        for i in range(len(self.continuous_temperature)):
+            f_zp[i] = zero_point_energy(freq[i], weight)
+        return f_zp
+
     def integrate_entropy(self):
         """
         Calculate the free energy on a finer temperature grid by integrating entropy
@@ -120,7 +133,8 @@ class FreeEnergyCalculation:
             T_0 = self.discrete_temperatures[0]
             F_total = f_total_raw + raw_E - T_0 * s_total_raw[0]
         else:
-            raise NotImplementedError
+            f_zp = self.calculate_zero_point_energy()
+            F_total = f_total_raw + f_zp + raw_E
         for i in range(len(self.continuous_temperature)):
             F_total_fitted[i] = inter.fitting(F_total[i])
         return F_total_fitted
@@ -306,6 +320,28 @@ def fit_entropy(raw_volumes, raw_entropy, discrete_temperatures, continuous_temp
     interpolated_quantities = np.array(interpolated_quantities).T
 
     return interpolated_quantities, interpolated_volumes
+
+
+def zero_point_energy(frequency, weights):
+    """
+    Equation for calculate entropy from frequencies
+    """
+
+    @jit(nopython=True, parallel=True)
+    def zp_formula(frequency):
+        shape = frequency.shape
+        frequency = frequency.reshape(-1)
+        # if frequency is negative, they are treated as 0
+        frequency[frequency < 0] = 0.0
+        hw = HBAR * frequency
+        result = 1 / 2 * hw
+        return result.reshape(shape)
+
+    scaled_q_weights = weights / np.sum(weights)
+    zp_energies = np.dot(np.nan_to_num(zp_formula(
+        frequency)).sum(axis=2), scaled_q_weights)
+
+    return zp_energies
 
 
 def entropy(temperature, frequency, weights):
