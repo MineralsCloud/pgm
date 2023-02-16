@@ -21,7 +21,6 @@ def run(file_settings: str):
     print("Caution: If imaginary frequencies found, they are currently treated as 0!")
     calc = FreeEnergyCalculation(user_settings)
     print("Calculating free energies")
-    # total_free_energies, vib_entropies, volumes, desired_pressure, continuous_temperature = calc.calculate()
     total_free_energies = calc.interpolate_F_total()
     volumes = calc.calculate_volumes()
     continuous_temperature = calc.continuous_temperature
