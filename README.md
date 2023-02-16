@@ -6,7 +6,6 @@ Calculate thermodynamic properties of matter using phonon gas model(PGM)
 
 ``pip install .``
 
-TODO: ``pip install . -e`` have some conflicts with the current command line
 
 ## How to use
 Here we provide two examples inside the example folder. One is CaSiO3, and one is Hcp Iron
