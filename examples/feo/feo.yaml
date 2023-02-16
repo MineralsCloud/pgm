@@ -1,0 +1,24 @@
+NV: 201
+NT: 41
+folder: './%sK.txt'
+initP : 200
+finalP : 400
+ratio : 1.2
+output_directory : './results/'
+temperature :
+            - 0
+            - 1000
+            - 2000
+            - 3000
+            - 4000
+pressure : True
+entropy : True
+internal_energy : True
+enthalpy : True
+gibbs_free_energy : True
+thermal_expansion_coefficient : True
+isothermal_bulk_modulus : True
+gruneisen_parameter : True
+adiabatic_bulk_modulus : True
+volumetric_heat_capacity : True
+isobaric_heat_capacity : True
