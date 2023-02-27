@@ -34,7 +34,18 @@ Contents
    :maxdepth: 1
    :glob:
 
+   basics/installation
+   basics/cli
+   basics/input
+   basics/output
+   basics/example
 
+.. toctree::
+   :caption: For developers
+   :maxdepth: 1
+   :glob:
+   
+   api
 
 Indices and tables
 ==================
