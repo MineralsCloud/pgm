@@ -2,7 +2,8 @@
 pgm
 ===
 
-This is the documentation of **pgm**.
+
+Welcome to the documentation of **pgm**.
 
 .. note::
 
@@ -26,13 +27,13 @@ This is the documentation of **pgm**.
 Contents
 ========
 
-.. toctree::
-   :maxdepth: 2
+**pgm** is a code tool to calculate thermodynamic properties of matter using phonon gas model (PGM).
 
-   License <license>
-   Authors <authors>
-   Changelog <changelog>
-   Module Reference <api/modules>
+.. toctree::
+   :caption: For users
+   :maxdepth: 1
+   :glob:
+
 
 
 Indices and tables
