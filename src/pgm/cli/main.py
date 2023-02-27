@@ -7,6 +7,7 @@ from pgm.data import save_data
 from pgm.settings import Settings, DEFAULT_SETTINGS
 from pgm.thermo import ThermodynamicProperties
 from pgm.util.unit_conversion import gpa_to_ry_b3, ry_b3_to_gpa, ry_to_j_mol, ry_to_ev, b3_to_a3
+from pgm.cli.banner import print_banner
 
 with open(Path(__file__).parent / "../version.py") as fp: exec(fp.read())
 
@@ -88,4 +89,5 @@ def main(settings: str, debug: str):
     handler = logging.StreamHandler()
     logger.addHandler(handler)
 
+    print_banner()
     run(settings)
