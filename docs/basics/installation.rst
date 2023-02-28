@@ -9,7 +9,7 @@ The installation process is straightforward and requires only a few steps.
 Clone the repository
 --------------------
 
-To install the `pgm` package, first clone the code repository using `git`:
+To install the ``pgm`` package, first clone the code repository using ``git``:
 
 .. code-block:: bash
 
@@ -18,30 +18,30 @@ To install the `pgm` package, first clone the code repository using `git`:
 Change to the code directory
 ----------------------------
 
-After cloning the code repository, change to the code directory using `cd`:
+After cloning the code repository, change to the code directory using ``cd``:
 
 .. code-block:: bash
 
     $ cd pgm
 
-This will change the current working directory to the `pgm` directory where the code is located.
+This will change the current working directory to the ``pgm`` directory where the code is located.
 
 
 Install the requirements
 ------------------------
 
-After changing to the code directory, install the required Python packages using `pip`:
+After changing to the code directory, install the required Python packages using ``pip``:
 
 .. code-block:: bash
 
     $ pip install -r requirements.txt
 
-This will read the `requirements.txt` file in the current directory (i.e., the `pgm` directory) and install all the required packages.
+This will read the ``requirements.txt`` file in the current directory (i.e., the ``pgm`` directory) and install all the required packages.
 
 Install the package
 -------------------
 
-Finally, install the `pgm` package using `pip`:
+Finally, install the ``pgm`` package using ``pip``:
 
 .. code-block:: bash
 
@@ -52,5 +52,5 @@ This will install the package into your Python environment and make it available
 Conclusion
 ----------
 
-Congratulations, you have successfully installed the `pgm`` Python package!
+Congratulations, you have successfully installed the ``pgm`` Python package!
 If you encounter any issues during the installation process, please consult the documentation or contact the developers for assistance.
