@@ -39,12 +39,13 @@ Contents
    basics/input
    basics/output
    basics/example
+   basics/faq
 
 .. toctree::
    :caption: For developers
    :maxdepth: 1
    :glob:
-   
+
    api
 
 Indices and tables
