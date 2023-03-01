@@ -69,8 +69,9 @@ class FreeEnergyCalculation:
         f_zp = np.empty((self.NT, number_of_raw_volume))
         freq = self.interpolate_frequencies()
         weight = self.input.weights[0]  # here of course ensure that all weights are the same
+        fzp0 = zero_point_energy(freq[0], weight)
         for i in range(len(self.continuous_temperature)):
-            f_zp[i] = zero_point_energy(freq[i], weight)
+            f_zp[i] = fzp0
         return f_zp
 
     def integrate_entropy(self):
