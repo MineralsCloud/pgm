@@ -2,18 +2,19 @@
 Calculate thermodynamic properties of matter using phonon gas model(PGM)
 
 [![GitHub Actions](https://github.com/MineralsCloud/pgm/actions/workflows/documentation.yml/badge.svg)](https://mineralscloud.github.io/pgm/index.html)
-
-[![pypi](https://img.shields.io/pypi/v/pgm.svg)](https://pypi.org/project/pgm/)
-[![pypi](https://img.shields.io/pypi/dm/pgm.svg)](https://pypi.org/project/pgm/)
+<!-- [![pypi](https://img.shields.io/pypi/v/pgm.svg)](https://pypi.org/project/pgm/) -->
+<!-- [![pypi](https://img.shields.io/pypi/dm/pgm.svg)](https://pypi.org/project/pgm/) -->
 
 ## Contributors
-![](https://img.shields.io/github/contributors/MineralsCloud/pgm)
 
 This repository is authored and maintained by [Hongjin Wang][1] and [Jingyi Zhuang][2].
 
 [1]: https://github.com/underhill1886
 
 [2]: https://github.com/jappoker
+
+## How to cite
+... TBD
 
 
 ## Installation
@@ -66,7 +67,4 @@ See [GitHub pages of pgm][3].
 
 [3]: https://mineralscloud.github.io/pgm/
 
-
-## How to cite
-... TBD
  
