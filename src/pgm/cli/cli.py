@@ -1,7 +1,9 @@
+from pathlib import Path
+
+import click
+
 from pgm.cli.main import main as _run
 from pgm.cli.plot import main as _plot
-import click
-from pathlib import Path
 
 with open(Path(__file__).parent / "../version.py") as fp:
     exec(fp.read())
