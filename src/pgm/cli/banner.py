@@ -2,8 +2,7 @@ from pgm.version import __version__
 
 
 def print_banner():
-    print(
-        f"""
+    print(f"""
   _ __   __ _ _ __ ___
  | '_ \ / _` | '_ ` _ \
  | |_) | (_| | | | | | |
@@ -11,8 +10,7 @@ def print_banner():
  | |     __/ |
  |_|    |___/
  Version {__version__}
-    """
-    )
+    """)
 
 
 if __name__ == "__main__":
