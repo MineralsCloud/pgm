@@ -4,15 +4,17 @@ import gc
 # from geothermpy import bind, Point
 from scipy.optimize import curve_fit
 
-def read_tp(filename = 'TP'):
 
-    return pd.read_csv(filename, delim_whitespace=True, names = ['T', 'P', 'dT/dP'])
+def read_tp(filename='TP'):
+    return pd.read_csv(filename, delim_whitespace=True, names=['T', 'P', 'dT/dP'])
+
 
 def read_data(filename: str, index_col) -> pd.DataFrame:
     """
     read from a csv file, basicly qha output style
     """
-    return pd.read_csv(filename, delim_whitespace=True, index_col = index_col)
+    return pd.read_csv(filename, delim_whitespace=True, index_col=index_col)
+
 
 # def generate_adiabatic_tp(geotherm, index, columns, init_p = 55, init_t = 1717):
 #     """
@@ -26,16 +28,19 @@ def read_data(filename: str, index_col) -> pd.DataFrame:
 def save_data(quantities, index, column, filename):
     """
     save a matrix quantity to csv
+    The saved files can be easily parsed using
+    pandas.read_table("PATH_TO_FILE", sep=',', header=0, index_col=0)
     """
-    df = pd.DataFrame(quantities, index = index, columns = column)
+    df = pd.DataFrame(quantities, index=index, columns=column)
     df.to_csv(filename)
     gc.collect()
+
 
 def save_line(filename, xlabel, ylabel, x, y):
     """
     save a 2d line to csv
     """
-    d = {xlabel:x, ylabel:y}
+    d = {xlabel: x, ylabel: y}
     df = pd.DataFrame(data=d)
     df.to_csv(filename)
     gc.collect

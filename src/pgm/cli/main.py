@@ -7,6 +7,7 @@ from pgm.data import save_data
 from pgm.settings import Settings, DEFAULT_SETTINGS
 from pgm.thermo import ThermodynamicProperties
 from pgm.util.unit_conversion import gpa_to_ry_b3, ry_b3_to_gpa, ry_to_j_mol, ry_to_ev, b3_to_a3
+from pgm.cli.banner import print_banner
 
 with open(Path(__file__).parent / "../version.py") as fp: exec(fp.read())
 
@@ -18,10 +19,13 @@ def run(file_settings: str):
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
 
-    print("Caution: If negative frequencies found, they are currently treated as 0!")
+    print("Caution: If imaginary frequencies found, they are currently treated as 0!")
     calc = FreeEnergyCalculation(user_settings)
     print("Calculating free energies")
-    total_free_energies, vib_entropies, volumes, desired_pressure, continuous_temperature = calc.calculate()
+    total_free_energies = calc.interpolate_F_total()
+    volumes = calc.calculate_volumes()
+    continuous_temperature = calc.continuous_temperature
+    desired_pressure = calc.pressures
     print("Calculating thermodynamics properties")
     thermo = ThermodynamicProperties(volumes, continuous_temperature, gpa_to_ry_b3(desired_pressure),
                                      total_free_energies)
@@ -50,27 +54,27 @@ def run(file_settings: str):
 
     if (user_settings.alpha_tp):
         alpha_tp = thermo.alpha_tp
-        save_data(alpha_tp, continuous_temperature, desired_pressure, out_dir + 'alpha_K_gpa')
+        save_data(alpha_tp, continuous_temperature, desired_pressure, out_dir + 'alpha_tp_K_gpa')
 
     if (user_settings.bt_tp):
         bt_tp = ry_b3_to_gpa(thermo.bt_tp)
-        save_data(bt_tp, continuous_temperature, desired_pressure, out_dir + 'bt_gpa_K_gpa')
+        save_data(bt_tp, continuous_temperature, desired_pressure, out_dir + 'bt_tp_gpa_K_gpa')
 
     if (user_settings.gamma_tp):
         gamma_tp = thermo.gamma_tp
-        save_data(gamma_tp, continuous_temperature, desired_pressure, out_dir + 'gamma_K_gpa')
+        save_data(gamma_tp, continuous_temperature, desired_pressure, out_dir + 'gamma_tp_K_gpa')
 
     if (user_settings.bs_tp):
         bs_tp = ry_b3_to_gpa(thermo.bs_tp)
-        save_data(bs_tp, continuous_temperature, desired_pressure, out_dir + 'bs_gpa_K_gpa')
+        save_data(bs_tp, continuous_temperature, desired_pressure, out_dir + 'bs_tp_gpa_K_gpa')
 
     if (user_settings.cv_tp):
         cv = ry_to_j_mol(thermo.cv_tp)
-        save_data(cv, continuous_temperature, desired_pressure, out_dir + 'cv_jmol_K_gpa')
+        save_data(cv, continuous_temperature, desired_pressure, out_dir + 'cv_tp_jmol_K_gpa')
 
     if (user_settings.cp_tp):
         cp = ry_to_j_mol(thermo.cp_tp)
-        save_data(cp, continuous_temperature, desired_pressure, out_dir + 'cp_jmol_K_gpa')
+        save_data(cp, continuous_temperature, desired_pressure, out_dir + 'cp_tp_jmol_K_gpa')
     print("Saving thermodynamics properties")
 
 
@@ -85,4 +89,5 @@ def main(settings: str, debug: str):
     handler = logging.StreamHandler()
     logger.addHandler(handler)
 
+    print_banner()
     run(settings)

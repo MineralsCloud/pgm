@@ -18,7 +18,7 @@ class Input:
     A class of pgm input
     The input is stored as a dictionary where dict[temp][0,1,2,3] are
         - the number of formula unit in a unit cell,
-        - the number of volumes in *inp*,
+        - discrete volumes in *inp*,
         - the static energies of each volume,
         - a 3D array, i.e., the frequencies of each volume of each q-point of each mode, and
         - a vector of weights of each q-point, respectively.
@@ -32,27 +32,30 @@ class Input:
         self.__temperatures = discrete_temperature
         rs = {}
         number_of_formula_unit = []
-        number_of_volumes = []
+        all_volumes = []
         static_energy = []
         frequencies = []
         weights = []
+        all_electronic_entropy = []
         for temp in discrete_temperature:
             path = path_to_dir % str(temp)
             rs[temp] = read_input(path)
             number_of_formula_unit.append(rs[temp][0])
-            number_of_volumes.append(rs[temp][1])
+            all_volumes.append(rs[temp][1])
             static_energy.append(rs[temp][2])
             frequencies.append(rs[temp][3])
             weights.append(rs[temp][4])
+            all_electronic_entropy.append(rs[temp][5])
 
         self.__rs = rs  # leave it for now
         # To corporate with the read_input function without changing it
         self.number_of_formula_unit = numpy.array(number_of_formula_unit)
-        self.number_of_volumes = numpy.array(number_of_volumes)
-        self.static_energy = numpy.array(static_energy)
+        self.volumes = numpy.array(all_volumes[0])
+        self.static_energy = numpy.array(static_energy[0])
         # A 4D array with shape of (# of temp, # of volumes, # of q points, # of modes)
         self.frequencies = numpy.array(frequencies)
         self.weights = numpy.array(weights)
+        self.electronic_entropy = numpy.array(all_electronic_entropy)
 
     def get_input(self):
         return self.__rs
@@ -111,6 +114,7 @@ def read_input(inp: Union[str, pathlib.PurePath]):
     # Generate containers for storing the following data.
     volumes = np.empty(volumes_amount, dtype=float)
     static_energies = np.empty(volumes_amount, dtype=float)
+    electronic_entropy = np.empty(volumes_amount, dtype=float)
     frequencies = np.empty((volumes_amount, q_points_amount, modes_per_q_point_amount), dtype=float)
     q_weights = np.empty(q_points_amount, dtype=float)
 
@@ -121,7 +125,9 @@ def read_input(inp: Union[str, pathlib.PurePath]):
     j = 0  # q-point index, note it is not count like `i`!
 
     # Now we start reading the energies, volumes, and frequencies.
-    regex1 = re.compile("P\s*=\s*-?\d*\.?\d*\s*V\s*=(\s*\d*\.?\d*)\s*E\s*=\s*(-?\d*\.?\d*)", re.IGNORECASE)
+    # Note here P is not captured, wtf guys?
+    regex1 = re.compile("P\s*=\s*-?\d*\.?\d*\s*V\s*=(\s*\d*\.?\d*)\s*E\s*=\s*(-?\d*\.?\d*)\s*S_el\s*=\s*(-?\d*\.?\d*)",
+                        re.IGNORECASE)
 
     for line in gen:
         if not line.strip():
@@ -132,7 +138,7 @@ def read_input(inp: Union[str, pathlib.PurePath]):
             if match is None:
                 raise ValueError("Search of pattern {0} failed in line '{1}!".format(regex1.pattern, line))
             else:
-                volumes[i], static_energies[i] = match.groups()
+                volumes[i], static_energies[i], electronic_entropy[i] = match.groups()
                 i += 1
                 j = 0
             continue
@@ -165,4 +171,4 @@ def read_input(inp: Union[str, pathlib.PurePath]):
     if not is_monotonic_decreasing(volumes):
         raise ValueError('The volumes in the input file is not monotonicly decreasing, please check your input file')
 
-    return formula_unit_number, volumes, static_energies, frequencies, q_weights
+    return formula_unit_number, volumes, static_energies, frequencies, q_weights, electronic_entropy
