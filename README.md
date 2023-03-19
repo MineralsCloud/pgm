@@ -1,4 +1,4 @@
-# <i>pgm</i>: phonon gas model
+# <i>pgm</i>: A Python package for free energy calculations within the phonon gas model
 Calculate thermodynamic properties of matter using phonon gas model(PGM)
 
 [![GitHub Actions](https://github.com/MineralsCloud/pgm/actions/workflows/documentation.yml/badge.svg)](https://mineralscloud.github.io/pgm/index.html)
@@ -11,7 +11,7 @@ This repository is authored and maintained by [Hongjin Wang][1] and [Jingyi Zhua
 
 [1]: https://github.com/underhill1886
 
-[2]: https://github.com/jappoker
+[2]: https://www.jappoker.com/
 
 ## How to cite
 ... TBD
@@ -38,28 +38,44 @@ Finally, install the pgm package using ``pip``:
 ```shell
 $ pip install .
 ```
-See details [Installation of pgm](https://mineralscloud.github.io/pgm/basics/installation.html).
+See details in [Installation of pgm](https://mineralscloud.github.io/pgm/basics/installation.html).
 
 
 ## How to use
-Here we provide two examples inside the example folder. One is CaSiO3, and one is Hcp Iron
+Here we provide two examples inside the example folder. One is CaSiO₃, and one is B8-FeO.
 
-Simply run
+For the case of CaSiO₃, simply run the following commands from the root path of the package:
 
-``cd examples/casio3``
+```shell
+$ cd examples/casio3
+```
 
-``pgm run casio3.yaml``
+```shell
+$ pgm run casio3.yaml
+```
+
+and for another case, B8-FeO,
+
+run the following commands from the root path of the package:
+
+```shell
+$ cd examples/feo
+```
+
+```shell
+$ pgm run feo.yaml
+```
 
 See details [Command Line Tool of pgm](https://mineralscloud.github.io/pgm/basics/cli.html).
 
 ## Use your own example
 First, you need to prepare a set of phonon calculations calculated at different temperatures.
 
-Convert them as standard qha input files(for now use input converter in qha pkg), and put the input files like in the case of CaSiO3 or hcp iron
+Convert them as standard qha input files(for now use input converter in qha pkg), and put the input files like in the case of CaSiO₃ or B8-FeO
 
 Compose your own `settings.yaml` file, enjoy.
 
-Details TBD.
+Details will be provide shortly.
 
 ## Documentation
 
