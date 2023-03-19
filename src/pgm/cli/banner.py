@@ -1,4 +1,6 @@
 from pgm.version import __version__
+
+
 def print_banner():
     print(f"""
   _ __   __ _ _ __ ___  
@@ -10,5 +12,6 @@ def print_banner():
  Version {__version__}
     """)
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     print_banner()
