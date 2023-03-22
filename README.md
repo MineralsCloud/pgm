@@ -14,8 +14,8 @@ This repository is authored and maintained by [Hongjin Wang][1] and [Jingyi Zhua
 [2]: https://www.jappoker.com/
 
 ## How to cite
-... TBD
 
+The paper is currently available from arXiv: Hongjin Wang, Jingyi Zhuang, Zhen Zhang, Qi Zhang, Renata M. Wentzcovitch, pgm: A Python package for free energy calculations within the phonon gas model, [arXiv:2303.1158](https://arxiv.org/abs/2303.11583) [physics.comp-ph].
 
 ## Installation
 ### Manual install
