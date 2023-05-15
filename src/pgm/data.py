@@ -3,7 +3,7 @@ import numpy as np
 import gc
 
 
-def read_data(filename: str, index_col) -> pd.DataFrame:
+def read_data(filename: str) -> pd.DataFrame:
     """
     read from a csv file, basicly qha output style
     """
