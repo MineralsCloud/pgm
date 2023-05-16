@@ -1,6 +1,7 @@
-import pandas as pd
-import numpy as np
 import gc
+
+import numpy as np
+import pandas as pd
 
 
 def read_data(filename: str) -> pd.DataFrame:
