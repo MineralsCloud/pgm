@@ -34,11 +34,11 @@ Output parameters
     |                                        |               | | Internal energy in the unit of eV, temperature in Kelvin,    |
     |                                        |               | | pressure in GPa.                                             |
     +----------------------------------------+---------------+----------------------------------------------------------------+
-    | Enthalpy :math:`H`                     | htp_ev_T_gpa  | | Enthalpy (T, P) result.                                      |
+    | Enthalpy :math:`H`                     | htp_ev_K_gpa  | | Enthalpy (T, P) result.                                      |
     |                                        |               | | Enthalpy in the unit of eV, temperature in Kelvin,           |
     |                                        |               | | pressure in GPa.                                             |
     +----------------------------------------+---------------+----------------------------------------------------------------+
-    | Gibbs free energy :math:`G`            | gtp_ev_T_gpa  | | Gibbs Free Energy (T, P) result.                             |
+    | Gibbs free energy :math:`G`            | gtp_ev_K_gpa  | | Gibbs Free Energy (T, P) result.                             |
     |                                        |               | | Gibbs Free Energy in the unit of eV, temperature in Kelvin,  |
     |                                        |               | | pressure in GPa.                                             |
     +----------------------------------------+---------------+----------------------------------------------------------------+
