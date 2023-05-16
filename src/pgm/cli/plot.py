@@ -3,7 +3,6 @@ from glob import glob
 
 import click
 import numpy
-
 from pgm.plot.plotter import Plot
 
 

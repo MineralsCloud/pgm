@@ -1,6 +1,5 @@
 import numpy
 import pytest
-
 from pgm.plot.plotter import Plot
 
 error_paras = [

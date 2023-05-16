@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy
-
 from pgm.data import read_data
 
 
