@@ -69,7 +69,7 @@ class Plot:
         elif self.volume is not None:  # Plot T,V
             plot_temperature = self.df.index.values
             """
-            The problem with choose V is that the volume might not be exact. 
+            The problem with choose V is that the volume might not be exact.
             So needs to find the closest value to target in volumes
             """
             all_volumes = self.df.columns.values
