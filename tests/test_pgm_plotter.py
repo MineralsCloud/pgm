@@ -3,16 +3,23 @@ import numpy
 from pgm.plot.plotter import Plot
 
 error_paras = [
-    (None, numpy.array([10.0, 20.0, 30.0]), numpy.array([10.0, 20.0, 30.0]), 'tests/data/cp_tp_jmol_K_gpa', 'outname'),
-    (numpy.array([10.0, 20.0, 30.0]), None, numpy.array([10.0, 20.0, 30.0]), 'tests/data/cp_tp_jmol_K_gpa', 'outname'),
-    (numpy.array([10.0]), numpy.array([1500.0, 1600.0, 1700.0]), None, 'tests/data/cp_tp_jmol_K_gpa', 'outname'),
-    (numpy.array([10.0]), numpy.array([10.0]), numpy.array([1500.0, 1600.0, 1700.0]), 'tests/data/ftv_ev_a3', 'outname')
+    (None, numpy.array([10.0, 20.0, 30.0]), numpy.array(
+        [10.0, 20.0, 30.0]), 'tests/data/cp_tp_jmol_K_gpa', 'outname'),
+    (numpy.array([10.0, 20.0, 30.0]), None, numpy.array(
+        [10.0, 20.0, 30.0]), 'tests/data/cp_tp_jmol_K_gpa', 'outname'),
+    (numpy.array([10.0]), numpy.array([1500.0, 1600.0, 1700.0]),
+     None, 'tests/data/cp_tp_jmol_K_gpa', 'outname'),
+    (numpy.array([10.0]), numpy.array([10.0]), numpy.array(
+        [1500.0, 1600.0, 1700.0]), 'tests/data/ftv_ev_a3', 'outname')
 ]
 
 correct_paras = [(None, numpy.array([30.0, 60.0, 100.0, 140.0]), None, 'tests/data/cp_tp_jmol_K_gpa', 'casio3_cp_vs_t'),
-                 (numpy.array([50.01, 45.0, 38.01]), None, None, 'tests/data/ftv_ev_a3', 'ftv_out_vs_t'),
-                 (None, None, numpy.array([2000.0, 2500.0, 3000.0]), 'tests/data/cp_tp_jmol_K_gpa', 'casio3_cp_vs_p'),
-                 (None, None, numpy.array([2000.0, 2500.0, 3000.0]), 'tests/data/ftv_ev_a3', 'ftv_out_vs_v'),
+                 (numpy.array([50.01, 45.0, 38.01]), None,
+                  None, 'tests/data/ftv_ev_a3', 'ftv_out_vs_t'),
+                 (None, None, numpy.array(
+                     [2000.0, 2500.0, 3000.0]), 'tests/data/cp_tp_jmol_K_gpa', 'casio3_cp_vs_p'),
+                 (None, None, numpy.array(
+                     [2000.0, 2500.0, 3000.0]), 'tests/data/ftv_ev_a3', 'ftv_out_vs_v'),
                  ]
 
 

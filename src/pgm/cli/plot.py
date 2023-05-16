@@ -28,7 +28,8 @@ def process_input(ctx, param, value):
               help='Comma seperated temperature(s) to be plotted. ')
 @click.option('-o', '--outname', help='output name of the figure', required=True)
 @click.argument('filename', type=click.Path(exists=True))
-@click.pass_context  # This line would result in confusing bug if ctx is not set as the first argument in main
+# This line would result in confusing bug if ctx is not set as the first argument in main
+@click.pass_context
 def main(ctx, volume, pressure, temperature, filename, outname):
     """
     \b

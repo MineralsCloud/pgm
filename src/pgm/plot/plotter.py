@@ -73,7 +73,8 @@ class Plot:
                 closest_column_index = numpy.abs(all_volumes - v).argmin()
                 closest_column_value = self.df.columns[closest_column_index]
                 line = self.df[closest_column_value].values
-                plt.plot(plot_temperature[4:-4], line[4:-4], label=f'{closest_column_value} $Ang^3$')
+                plt.plot(plot_temperature[4:-4], line[4:-4],
+                         label=f'{closest_column_value} $Ang^3$')
 
             plt.xlabel('Temperature (K)')
             plt.ylabel(self.quantity_name_with_unit)
