@@ -4,6 +4,7 @@ from pgm.data import read_data
 
 
 class Plot:
+
     def __init__(self, volume, pressure, temperature, filename, outname):
         self.volume = volume
         self.pressure = pressure
@@ -20,11 +21,8 @@ class Plot:
         Rules: Only one quantity(temperature, pressure, or volume) can be chosen.
         If more than one are chosen, raise an error
         """
-        if (
-            self.volume is not None
-            and self.pressure is not None
-            and self.temperature is not None
-        ):
+        if (self.volume is not None and self.pressure is not None
+                and self.temperature is not None):
             raise ValueError("Volume, pressure and temperature are all chosen")
         elif self.volume is not None and self.pressure is not None:
             raise ValueError("Both volume and pressure are chosen")

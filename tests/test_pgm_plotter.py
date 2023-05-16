@@ -65,65 +65,61 @@ correct_paras = [
 ]
 
 
-@pytest.mark.parametrize(
-    "volume, pressure, temperature, filename, outname", [error_paras[0]]
-)
-def test_check_if_paras_valid_one(volume, pressure, temperature, filename, outname):
+@pytest.mark.parametrize("volume, pressure, temperature, filename, outname",
+                         [error_paras[0]])
+def test_check_if_paras_valid_one(volume, pressure, temperature, filename,
+                                  outname):
     with pytest.raises(ValueError):
         plot_instance = Plot(volume, pressure, temperature, filename, outname)
 
 
-@pytest.mark.parametrize(
-    "volume, pressure, temperature, filename, outname", [error_paras[1]]
-)
-def test_check_if_paras_valid_two(volume, pressure, temperature, filename, outname):
+@pytest.mark.parametrize("volume, pressure, temperature, filename, outname",
+                         [error_paras[1]])
+def test_check_if_paras_valid_two(volume, pressure, temperature, filename,
+                                  outname):
     with pytest.raises(ValueError):
         plot_instance = Plot(volume, pressure, temperature, filename, outname)
 
 
-@pytest.mark.parametrize(
-    "volume, pressure, temperature, filename, outname", [error_paras[2]]
-)
-def test_check_if_paras_valid_three(volume, pressure, temperature, filename, outname):
+@pytest.mark.parametrize("volume, pressure, temperature, filename, outname",
+                         [error_paras[2]])
+def test_check_if_paras_valid_three(volume, pressure, temperature, filename,
+                                    outname):
     with pytest.raises(ValueError):
         plot_instance = Plot(volume, pressure, temperature, filename, outname)
 
 
-@pytest.mark.parametrize(
-    "volume, pressure, temperature, filename, outname", [error_paras[3]]
-)
-def test_check_if_paras_valid_four(volume, pressure, temperature, filename, outname):
+@pytest.mark.parametrize("volume, pressure, temperature, filename, outname",
+                         [error_paras[3]])
+def test_check_if_paras_valid_four(volume, pressure, temperature, filename,
+                                   outname):
     with pytest.raises(ValueError):
         plot_instance = Plot(volume, pressure, temperature, filename, outname)
 
 
-@pytest.mark.parametrize(
-    "volume, pressure, temperature, filename, outname", [correct_paras[0]]
-)
+@pytest.mark.parametrize("volume, pressure, temperature, filename, outname",
+                         [correct_paras[0]])
 def test_tp_plot_one(volume, pressure, temperature, filename, outname):
     plot_instance = Plot(volume, pressure, temperature, filename, outname)
     plot_instance.plot()
 
 
-@pytest.mark.parametrize(
-    "volume, pressure, temperature, filename, outname", [correct_paras[1]]
-)
+@pytest.mark.parametrize("volume, pressure, temperature, filename, outname",
+                         [correct_paras[1]])
 def test_tp_plot_two(volume, pressure, temperature, filename, outname):
     plot_instance = Plot(volume, pressure, temperature, filename, outname)
     plot_instance.plot()
 
 
-@pytest.mark.parametrize(
-    "volume, pressure, temperature, filename, outname", [correct_paras[2]]
-)
+@pytest.mark.parametrize("volume, pressure, temperature, filename, outname",
+                         [correct_paras[2]])
 def test_tp_plot_three(volume, pressure, temperature, filename, outname):
     plot_instance = Plot(volume, pressure, temperature, filename, outname)
     plot_instance.plot()
 
 
-@pytest.mark.parametrize(
-    "volume, pressure, temperature, filename, outname", [correct_paras[3]]
-)
+@pytest.mark.parametrize("volume, pressure, temperature, filename, outname",
+                         [correct_paras[3]])
 def test_tp_plot_four(volume, pressure, temperature, filename, outname):
     plot_instance = Plot(volume, pressure, temperature, filename, outname)
     plot_instance.plot()
