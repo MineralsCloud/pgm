@@ -17,18 +17,25 @@ def process_input(ctx, param, value):
 
 
 @click.command("plot")
-@click.option('-v', '--volume', callback=process_input,
+@click.option('-v', '--volume',
+              callback=process_input,
               help='Comma seperated volume(s) to be plotted. ')
-@click.option('-p', '--pressure', callback=process_input,
+@click.option('-p', '--pressure',
+              callback=process_input,
               help='Comma seperated pressure(s) to be plotted.')
-@click.option('-t', '--temperature', callback=process_input,
+@click.option('-t', '--temperature',
+              callback=process_input,
               help='Comma seperated temperature(s) to be plotted. ')
+@click.option('-o', '--outname', help='output name of the figure', required=True)
 @click.argument('filename', type=click.Path(exists=True))
-@click.pass_context
-def main(volume, pressure, temperature, filename):
+@click.pass_context  # This line would result in confusing bug if ctx is not set as the first argument in main
+def main(ctx, volume, pressure, temperature, filename, outname):
     """
     \b
     Plot pgm calculation thermodynamics results.
-    Specify either temperature/pressure or temperature/volume to be plotted.
-    Choice of T/P or T/V must match the file storing pgm calculation results.
+    Specify either temperature, pressure or volume to be plotted.
+    Choice of T, P, V must match the file storing pgm calculation results.
     """
+    print(temperature)
+    plotter = Plot(volume, pressure, temperature, filename, outname)
+    plotter.plot()

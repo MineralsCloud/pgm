@@ -7,7 +7,10 @@ def read_data(filename: str) -> pd.DataFrame:
     """
     read from a csv file, basicly qha output style
     """
-    return pd.read_table(filename, sep=',', header=0, index_col=0)
+    df = pd.read_table(filename, sep=',', header=0, index_col=0)
+    df.columns = df.columns.astype(float)
+    df.index = df.index.astype(float)
+    return df
 
 
 def save_data(quantities, index, column, filename):
