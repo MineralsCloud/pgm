@@ -11,23 +11,32 @@ def process_input(ctx, param, value):
     try:
         # If it's a single value it will be converted to an array with one element.
         # If it's a string of comma-separated floats, it will be converted to an array of those floats.
-        return numpy.array([float(val) for val in value.split(',')])
+        return numpy.array([float(val) for val in value.split(",")])
     except ValueError:
         return numpy.array([float(value)])
 
 
 @click.command("plot")
-@click.option('-v', '--volume',
-              callback=process_input,
-              help='Comma seperated volume(s) to be plotted. ')
-@click.option('-p', '--pressure',
-              callback=process_input,
-              help='Comma seperated pressure(s) to be plotted.')
-@click.option('-t', '--temperature',
-              callback=process_input,
-              help='Comma seperated temperature(s) to be plotted. ')
-@click.option('-o', '--outname', help='output name of the figure', required=True)
-@click.argument('filename', type=click.Path(exists=True))
+@click.option(
+    "-v",
+    "--volume",
+    callback=process_input,
+    help="Comma seperated volume(s) to be plotted. ",
+)
+@click.option(
+    "-p",
+    "--pressure",
+    callback=process_input,
+    help="Comma seperated pressure(s) to be plotted.",
+)
+@click.option(
+    "-t",
+    "--temperature",
+    callback=process_input,
+    help="Comma seperated temperature(s) to be plotted. ",
+)
+@click.option("-o", "--outname", help="output name of the figure", required=True)
+@click.argument("filename", type=click.Path(exists=True))
 # This line would result in confusing bug if ctx is not set as the first argument in main
 @click.pass_context
 def main(ctx, volume, pressure, temperature, filename, outname):
