@@ -19,7 +19,7 @@ The associated paper is published [online here](https://authors.elsevier.com/c/1
 
 Please cite this article as: 
 
-| Hongjin Wang, Jingyi Zhuang, Zhen Zhang, Qi Zhang, Renata M. Wentzcovitch, pgm: A Python package for free energy calculations within the phonon gas model, Computer Physics Communications (2023), Volume 291, 2023, 108845, [https://doi.org/10.1016/j.cpc.2023.108845](https://doi.org/10.1016/j.cpc.2023.108845).
+Hongjin Wang, Jingyi Zhuang, Zhen Zhang, Qi Zhang, Renata M. Wentzcovitch, pgm: A Python package for free energy calculations within the phonon gas model, Computer Physics Communications (2023), Volume 291, 2023, 108845, [https://doi.org/10.1016/j.cpc.2023.108845](https://doi.org/10.1016/j.cpc.2023.108845).
 
 If you are unable to access the full text of this article, please contact the authors.
 
