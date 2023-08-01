@@ -56,8 +56,8 @@ try:
 except Exception as e:
     print("Running `sphinx-apidoc` failed!\n{}".format(e))
 
-sys.path.insert(0, os.path.abspath('../'))
-from pgm import __version__
+# sys.path.insert(0, os.path.abspath('../'))
+from pgm.version import __version__
 
 # -- General configuration -----------------------------------------------------
 
@@ -153,14 +153,14 @@ html_theme_options = {
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
 
-# The name for this set of Sphinx documents.  If None, it defaults to
-# "<project> v<release> documentation".
-try:
-    from pgm import __version__ as version
-except ImportError:
-    pass
-else:
-    release = version
+# # The name for this set of Sphinx documents.  If None, it defaults to
+# # "<project> v<release> documentation".
+# try:
+#     from pgm import __version__ as version
+# except ImportError:
+#     pass
+# else:
+#     release = version
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
