@@ -7,7 +7,9 @@ Welcome to the documentation of **pgm**.
 
 .. note::
 
-    This package has been submitted to Computers in Physics journal and is currently under review. If you encounter any questions or issues while using the package, please do not hesitate to contact the authors: Hongjin Wang (hw2626@columbia.edu), and Jingyi Zhuang (jz2907@columbia.edu).
+    This package has been published on Computers in Physics journal `online here <https://authors.elsevier.com/c/1hQ5e_FEhOCgU>`. 
+    Please cite this article as: Hongjin Wang, Jingyi Zhuang, Zhen Zhang, Qi Zhang, Renata M. Wentzcovitch, pgm: A Python package for free energy calculations within the phonon gas model, Computer Physics Communications (2023), Volume 291, 2023, 108845, https://doi.org/10.1016/j.cpc.2023.108845.
+    If you encounter any questions or issues while using the package, please do not hesitate to contact the authors: Hongjin Wang (hw2626@columbia.edu), and Jingyi Zhuang (jz2907@columbia.edu).
 
 
 Contents
