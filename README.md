@@ -2,8 +2,8 @@
 Calculate thermodynamic properties of matter using phonon gas model(PGM)
 
 [![GitHub Actions](https://github.com/MineralsCloud/pgm/actions/workflows/documentation.yml/badge.svg)](https://mineralscloud.github.io/pgm/index.html)
-<!-- [![pypi](https://img.shields.io/pypi/v/pgm.svg)](https://pypi.org/project/pgm/) -->
-<!-- [![pypi](https://img.shields.io/pypi/dm/pgm.svg)](https://pypi.org/project/pgm/) -->
+[![pypi](https://img.shields.io/pypi/v/phonon-gas-model.svg)](https://pypi.org/project/phonon-gas-model/)
+[![pypi](https://img.shields.io/pypi/dm/phonon-gas-model.svg)](https://pypi.org/project/phonon-gas-model/)
 
 ## Contributors
 
