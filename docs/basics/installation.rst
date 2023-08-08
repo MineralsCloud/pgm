@@ -4,7 +4,19 @@ Installation
 This document provides instructions for installing the pgm package.
 pgm Code is a code to calculate thermodynamic properties of matter 
 using phonon gas model (PGM) in Python.
+
 The installation process is straightforward and requires only a few steps.
+
+Install Directly from PyPI
+--------------------------
+
+You can install the `pgm` package directly from PyPI without having to clone the repository.
+
+.. code-block:: bash
+
+    $ pip install phonon-gas-model
+
+For those who wish to clone the repository and install manually, the following steps will guide you.
 
 Clone the repository
 --------------------

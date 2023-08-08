@@ -24,6 +24,13 @@ Hongjin Wang, Jingyi Zhuang, Zhen Zhang, Qi Zhang, Renata M. Wentzcovitch, pgm: 
 If you are unable to access the full text of this article, please contact the authors.
 
 ## Installation
+### Install from PyPI
+You can install the package directly from PyPI:
+```shell
+$ pip install phonon-gas-model
+```
+
+
 ### Manual install
 To install the ``pgm`` package, first clone the code repository using ``git``:
 ```shell
