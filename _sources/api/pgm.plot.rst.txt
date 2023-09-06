@@ -1,0 +1,21 @@
+pgm.plot package
+================
+
+Submodules
+----------
+
+pgm.plot.plotter module
+-----------------------
+
+.. automodule:: pgm.plot.plotter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: pgm.plot
+   :members:
+   :undoc-members:
+   :show-inheritance:

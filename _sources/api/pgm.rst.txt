@@ -1,0 +1,80 @@
+pgm package
+===========
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   pgm.cli
+   pgm.plot
+   pgm.reader
+   pgm.util
+
+Submodules
+----------
+
+pgm.calculator module
+---------------------
+
+.. automodule:: pgm.calculator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pgm.data module
+---------------
+
+.. automodule:: pgm.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pgm.interpolate module
+----------------------
+
+.. automodule:: pgm.interpolate
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pgm.settings module
+-------------------
+
+.. automodule:: pgm.settings
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pgm.thermo module
+-----------------
+
+.. automodule:: pgm.thermo
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pgm.v2p module
+--------------
+
+.. automodule:: pgm.v2p
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pgm.version module
+------------------
+
+.. automodule:: pgm.version
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: pgm
+   :members:
+   :undoc-members:
+   :show-inheritance:

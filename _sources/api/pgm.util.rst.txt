@@ -1,0 +1,45 @@
+pgm.util package
+================
+
+Submodules
+----------
+
+pgm.util.fitting module
+-----------------------
+
+.. automodule:: pgm.util.fitting
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pgm.util.grid\_interpolation module
+-----------------------------------
+
+.. automodule:: pgm.util.grid_interpolation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pgm.util.tools module
+---------------------
+
+.. automodule:: pgm.util.tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pgm.util.unit\_conversion module
+--------------------------------
+
+.. automodule:: pgm.util.unit_conversion
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: pgm.util
+   :members:
+   :undoc-members:
+   :show-inheritance:

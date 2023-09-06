@@ -1,0 +1,21 @@
+pgm.reader package
+==================
+
+Submodules
+----------
+
+pgm.reader.read\_input module
+-----------------------------
+
+.. automodule:: pgm.reader.read_input
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: pgm.reader
+   :members:
+   :undoc-members:
+   :show-inheritance:

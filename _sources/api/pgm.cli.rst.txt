@@ -1,0 +1,45 @@
+pgm.cli package
+===============
+
+Submodules
+----------
+
+pgm.cli.banner module
+---------------------
+
+.. automodule:: pgm.cli.banner
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pgm.cli.cli module
+------------------
+
+.. automodule:: pgm.cli.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pgm.cli.main module
+-------------------
+
+.. automodule:: pgm.cli.main
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pgm.cli.plot module
+-------------------
+
+.. automodule:: pgm.cli.plot
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: pgm.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:

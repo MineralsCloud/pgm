@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Input Files &mdash; pgm 1.0.0-a documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=a35eb172"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Output Files" href="output.html" />
+    <link rel="prev" title="Command Line Tools" href="cli.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pgm
+          </a>
+              <div class="version">
+                1.0.0-a
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">For users</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Tools</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Input Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-file-settings-yaml">Configuration File <code class="docutils literal notranslate"><span class="pre">settings.yaml</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#qha-input-data-file">QHA Input Data File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-build-input-files">How to Build Input Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">Output Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions (FAQ)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For developers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pgm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Input Files</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/basics/input.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="input-files">
+<h1>Input Files<a class="headerlink" href="#input-files" title="Link to this heading"></a></h1>
+<p>The pgm code has two types of input files as described in the following contents:</p>
+<ol class="arabic simple">
+<li><p>a user-specified control file <code class="docutils literal notranslate"><span class="pre">settings.yaml</span></code></p></li>
+<li><p>a series of data files <code class="docutils literal notranslate"><span class="pre">input-*K</span></code></p></li>
+</ol>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Table 3: Files needed for using the code</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>File name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>settings.yaml</p></td>
+<td><div class="line-block">
+<div class="line">Settings file for pgm calculation, the user</div>
+<div class="line">can set the temperatures, pressures, input</div>
+<div class="line">file structures, and output files.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="line-block">
+<div class="line">input-0K,</div>
+<div class="line">input-300K,</div>
+<div class="line">input-1000K…</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">Each input data file contains the volumes,</div>
+<div class="line">static total energies, and frequencies from</div>
+<div class="line">ab initio calculations at its temperature as</div>
+<div class="line">specified in the input file name.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<section id="configuration-file-settings-yaml">
+<h2>Configuration File <code class="docutils literal notranslate"><span class="pre">settings.yaml</span></code><a class="headerlink" href="#configuration-file-settings-yaml" title="Link to this heading"></a></h2>
+<p>The configuration file is a <code class="docutils literal notranslate"><span class="pre">YAML</span></code> file that contains various parameters and settings used by the program. The format of the configuration file is as follows:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># This is the example of FeO
+# examples/feo/feo.yaml
+
+NV: 201
+NT: 41
+folder: &#39;./%sK.txt&#39;
+initP : 200
+finalP : 400
+ratio : 1.2
+output_directory : &#39;./results/&#39;
+temperature :
+            - 0
+            - 1000
+            - 2000
+            - 3000
+            - 4000
+pressure : True
+entropy : True
+internal_energy : True
+enthalpy : True
+gibbs_free_energy : True
+thermal_expansion_coefficient : True
+isothermal_bulk_modulus : True
+gruneisen_parameter : True
+adiabatic_bulk_modulus : True
+volumetric_heat_capacity : True
+isobaric_heat_capacity : True
+</pre></div>
+</div>
+<p>The following parameters must be specified in the configuration file:</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Table 4: Parameters in the settings.yaml file in YAML syntax.</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameters</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NV</p></td>
+<td><p>Integer</p></td>
+<td><p>Number of volumes (same as pressures) on the grid</p></td>
+</tr>
+<tr class="row-odd"><td><p>NT</p></td>
+<td><p>Integer</p></td>
+<td><p>Number of temperatures on the grid</p></td>
+</tr>
+<tr class="row-even"><td><p>folder</p></td>
+<td><p>String</p></td>
+<td><div class="line-block">
+<div class="line">The folder or data file name containing the placeholder for the temperatures,</div>
+<div class="line">i.e., ‘/%sK/input.txt’, ‘./%sK.txt’</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>initP</p></td>
+<td><p>Integer/Float</p></td>
+<td><p>The desired initial pressure in the unit of GPa for calculations</p></td>
+</tr>
+<tr class="row-even"><td><p>finalP</p></td>
+<td><p>Integer/Float</p></td>
+<td><p>The desired final pressure in the unit of GPa for calculations</p></td>
+</tr>
+<tr class="row-odd"><td><p>temperature</p></td>
+<td><p>List of Integer/Float</p></td>
+<td><div class="line-block">
+<div class="line">The list of temperatures of the inputs in the unit of Kelvin which are put into</div>
+<div class="line">the placeholder specified in the folder parameter.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>output_directory</p></td>
+<td><p>String</p></td>
+<td><p>The path to save the output data. The default path is ‘./results/’.</p></td>
+</tr>
+<tr class="row-odd"><td><p>pressure</p></td>
+<td><p>Boolean type value</p></td>
+<td><p>Determine whether to output pressure vs. temperature and volume results</p></td>
+</tr>
+<tr class="row-even"><td><p>entropy</p></td>
+<td><p>Boolean type value</p></td>
+<td><p>Determine whether to output entropy vs. temperature and volume results.</p></td>
+</tr>
+<tr class="row-odd"><td><p>internal_energy</p></td>
+<td><p>Boolean type value</p></td>
+<td><p>Determine whether to output internal energy vs. temperature and pressure results</p></td>
+</tr>
+<tr class="row-even"><td><p>enthalpy</p></td>
+<td><p>Boolean type value</p></td>
+<td><p>Determine whether to output enthalpy vs. temperature and pressure results.</p></td>
+</tr>
+<tr class="row-odd"><td><p>gibbs_free_energy</p></td>
+<td><p>Boolean type value</p></td>
+<td><p>Determine whether to output Gibbs free energy vs. temperature and pressure results.</p></td>
+</tr>
+<tr class="row-even"><td><p>thermal_expansion_coefficient</p></td>
+<td><p>Boolean type value</p></td>
+<td><p>Determine whether to output thermal expansion coefficient vs. temperature and pressure results.</p></td>
+</tr>
+<tr class="row-odd"><td><p>isothermal_bulk_modulus</p></td>
+<td><p>Boolean type value</p></td>
+<td><p>Determine whether to output isothermal bulk modulus vs. temperature and pressure results.</p></td>
+</tr>
+<tr class="row-even"><td><p>gruneisen_parameter</p></td>
+<td><p>Boolean type value</p></td>
+<td><p>Determine whether to output the Grüneisen parameter vs. temperature and pressure results.</p></td>
+</tr>
+<tr class="row-odd"><td><p>adiabatic_bulk_modulus</p></td>
+<td><p>Boolean type value</p></td>
+<td><p>Determine whether to output adiabatic bulk modulus vs. temperature and pressure results.</p></td>
+</tr>
+<tr class="row-even"><td><p>volumetric_heat_capacity</p></td>
+<td><p>Boolean type value</p></td>
+<td><p>Determine whether to output volumetric heat capacity vs. temperatureand pressure results.</p></td>
+</tr>
+<tr class="row-odd"><td><p>isobaric_heat_capacity</p></td>
+<td><p>Boolean type value</p></td>
+<td><p>Determine whether to output isobaric heat capacity vs. temperature and pressure results.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="qha-input-data-file">
+<h2>QHA Input Data File<a class="headerlink" href="#qha-input-data-file" title="Link to this heading"></a></h2>
+<p>The QHA input data file is a text file that contains data used by the program to perform Quasi Harmonic Approximation (QHA) calculations.</p>
+<p>We use the same file structure used in the Python package <code class="docutils literal notranslate"><span class="pre">qha</span></code> to store phonon calculation information to optimize compatibility, see <a class="reference external" href="https://mineralscloud.github.io/qha/tutorials/run.html#how-to-make-input-data">QHA’s input data</a>.</p>
+</section>
+<section id="how-to-build-input-files">
+<h2>How to Build Input Files<a class="headerlink" href="#how-to-build-input-files" title="Link to this heading"></a></h2>
+<p>To build the input files for this program, follow these steps:</p>
+<ol class="arabic simple">
+<li><p>Create a new YAML file for the configuration file.</p></li>
+<li><p>Open the configuration file and specify the required parameters and settings.</p></li>
+<li><p>Save the configuration file.</p></li>
+<li><p>Create a new text file for the QHA input data file.</p></li>
+<li><p>Open the QHA input data file and specify the required data.</p></li>
+<li><p>Save the QHA input data file.</p></li>
+</ol>
+<p>Note: The format of the input files must match the examples provided above.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cli.html" class="btn btn-neutral float-left" title="Command Line Tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="output.html" class="btn btn-neutral float-right" title="Output Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019-2023, Hongjin Wang &amp; Jingyi Zhuang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
