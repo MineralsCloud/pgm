@@ -15,7 +15,7 @@ This repository is authored and maintained by [Hongjin Wang][1] and [Jingyi Zhua
 
 ## How to cite
 
-The associated paper is published [online here](https://authors.elsevier.com/c/1hQ5e_FEhOCgU).
+The associated paper is published [online here](https://doi.org/10.1016/j.cpc.2023.108845).
 
 Please cite this article as: 
 
